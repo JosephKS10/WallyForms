@@ -1,0 +1,153 @@
+
+
+*{
+  margin: 0;
+  padding: 0;
+}
+
+
+@media screen and (min-width: 769px) {
+  .error-message {
+    color: red;
+    font-size: 12px;
+    border: 1px solid red;
+    width: 80vw;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px; 
+    text-align: center;
+  }
+  .home-container{
+    display: none;
+  }
+
+}
+
+
+@media screen and (max-width: 768px) {
+
+  .home-container {
+    overflow-y: hidden;
+    background: radial-gradient(circle at left bottom, 
+    rgba(10, 181, 223, 0.3) 0%, 
+    rgba(0, 5, 136, 0.3) 25%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(0, 187, 233, 0.3) 75%
+  );
+  }
+  .top{
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+
+  }
+  .leftDesign{
+    height: 34vh;
+  }
+  .bubbleContainer{
+    flex-direction: column;
+    height: 25vh;
+    overflow: hidden;
+
+  }
+  .companyLogo{
+    display: flex;
+    justify-content: center;
+    scale: 0.7;
+    position: relative;
+    top: -9vh;
+  }
+  .homeContent{
+    width: 80vw;
+    display: flex;
+    flex-direction: column;
+    margin-right: auto;
+    margin-left: auto;
+    background-color: transparent;
+    position: relative;
+    top: -8vh;
+  }
+
+
+  .titleContainer{
+    flex-direction: column;
+    justify-content: start;
+    background-color: transparent;
+  }
+  .headingFirst{
+    font-size: 22px;
+    color: #22215B;
+    background-color: transparent;
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+  }
+  .headingSecond{
+    font-size: 25px;
+    font-weight: 700;
+    color: #22215B;
+    background-color: transparent;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+
+  }
+  .contentContainer{
+    padding-top: 2vh;
+    background-color: transparent;
+
+  }
+  .text{
+    font-size: 14;
+    color: #7B7F9E;
+    background-color: transparent;
+    font-family: "Hind", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+
+  }
+  .buttonContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: transparent;
+    align-items: center;
+    position: relative;
+    top: -5vh;
+
+ }
+.btn {
+    font-size: 16px;
+    background-color: #334D9C;
+    color: white;
+    width: 80vw;
+    height: 43px;
+    border-radius: 10px;
+    border: 1px solid #3E3D3D;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 20px;
+    -webkit-box-shadow: 0px 10px 6px -9px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 10px 6px -9px rgba(0,0,0,0.75);
+box-shadow: 0px 10px 6px -9px rgba(0,0,0,0.75);
+  }
+  .bottomWavesContainer{
+    display: flex;
+    align-items: end;
+    height: 13vh;
+
+    mix-blend-mode: normal;
+    background-color: transparent;
+  }
+  .bottomWaves{
+    min-height: 13vh;   
+    background-color: transparent; 
+  }
+ 
+  
+
+  
+}

@@ -1,0 +1,325 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+@media screen and (min-width: 769px) {
+    .error-message {
+      color: red;
+      font-size: 12px;
+      border: 1px solid red;
+      width: 80vw;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px; 
+      text-align: center;
+    }
+    
+  
+  }
+
+
+  @media screen and (max-width: 768px) {
+
+
+.boxHeading{
+    font-size: 25px;
+    font-weight: 600;
+    color: #22215B;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    text-decoration: underline;
+    background-color: transparent;
+    z-index: 0;
+}
+.boxSubHeading{
+    font-family: "Hind", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    width: 90vw;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: transparent;
+    z-index: 0;
+}
+.boxContent{
+    position: relative;
+    top: -17vh;
+    z-index: 0;
+    padding: 20px;
+    background-color: transparent;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    width: 80vw;
+    margin-left: auto;
+    margin-right: auto;
+}
+.lineContainer1{
+    display: flex;
+    justify-content: space-between; 
+    margin-bottom: 10px;
+    width: 50vw;
+    background-color: transparent;
+}
+.lineContainer{
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5vh;
+    width: 100%;
+    background-color: transparent;
+}
+.container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    background-color: transparent;
+    width: 75vw;
+    margin-bottom: 1.5vh;
+}
+.Question{
+    font-weight: 600;
+    font-size: 19px;
+    background-color: transparent;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    width: 35vw;
+    max-width: 35vw;
+    color: #22215B;
+}
+.QuestionLine{
+    font-weight: 600;
+    font-size: 19px;
+    background-color: transparent;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    width: 35vw;
+    max-width: 32.5vw;
+    color: #22215B;
+}
+.answer{
+    font-size: 11px;
+    font-weight: 400;
+    background-color: transparent;
+    color: #7F7D7D;
+    width: 50vw;
+}
+.answerLine{
+    font-size: 18px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+}
+.answerLineCheckBox{
+    font-size: 18px;
+    display: flex;
+    align-items: baseline;
+    background-color: transparent;
+    color: #404040;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+.answerLineVerticalCheckBox{
+    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    background-color: transparent;
+    color: #404040;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    margin-left: 5vw;
+}
+.ButtonContainer{
+    background-color: #D9D9D9;
+    width: 50vw;
+    display: flex;
+    justify-content: center;
+}
+.ButtonContainer button{
+    background-color: #D9D9D9;
+    color: #404040;
+    padding: 4px 14px;
+    border: 1px solid gray;
+    border-radius: 1px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+.ButtonContainer button.active{
+    background-color: #404040;
+    color: #C8C3C3;
+}
+.dropdown{
+    width: 45vw;
+    height: 3vh;
+    border-radius: 5px;
+    background-color: transparent;
+    background-color: #D9D9D9;
+    color: #404040;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+.inputLine{
+    width: 40vw;
+    height: 4vh;
+    border: none;
+    background-color: #D9D9D9;
+    color: #404040;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    padding-left: 2vw;
+}
+.error{
+    border: 1px solid red;
+}
+.dateLine{
+    width: 30vw;
+    height: 3vh;
+    padding: 1vw;
+    background-color: #D9D9D9;
+    border: none;
+    color: #404040;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+.answerText{
+    margin-left: 10px;
+    margin-right: 10px;
+    color: #404040;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 18px;
+}
+.answerCheckbox{
+    background-color: transparent;
+}
+.answerCheckboxVertical{
+    background-color: transparent;
+    width: 40vw;
+}
+.checkbox{
+    margin-right: 2vw;
+}
+.fileInput {
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+    background-color: #D9D9D9; 
+    color: #404040; 
+    padding: 10px 20px;
+    font-size: 14px;
+    width: 70%;
+  }
+.timeLine{
+    width: 45vw;
+    height: 20vh;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #404040;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+.timeInput{
+    width: 25vw;
+    height: 3vh;
+    padding: 1vw;
+    background-color: #D9D9D9;
+    border: none;
+    color: #404040;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    margin-bottom: 1vh;
+    margin-top: 1vh;
+
+}
+.heading{
+    font-size: 25px;
+    font-weight: 700;
+    margin-top: 1vh;
+    color: #333;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    text-decoration: underline;
+    background-color: transparent;
+
+}
+.subHeading{
+    font-size: 18px;
+    font-weight: 700;
+    color: #22215B;
+    text-align: center;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+
+}
+.highlighted{
+    background-color: #f7ff04;
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.VisaDetailsContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    border: 3px solid #e0e0e0;
+    padding: 15px
+}
+.nextButton {
+    background-color: #334D9C;
+    color: white;
+    padding: 10px 30px;
+    width: 40vw;
+    border: none;
+    border-radius: 10px;
+    font-size: 26px;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    position: relative;
+    top: -13vh;
+
+    margin-right: 2.5vh;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.nextButton:hover {
+    background-color: #333;
+}
+.error-message {
+    color: red;
+    font-size: 10px;
+    margin-top: 5px;
+    text-align: right;
+  }
+
+  }
+
+  

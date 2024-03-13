@@ -1,0 +1,1087 @@
+import React, { useState } from 'react';
+import './PersonalInfoForm.css';
+import Canvas from './SignatureDrawComponent';
+import { useNavigate } from 'react-router-dom'; 
+import Header from './Header';
+import Modal from './Modal';
+
+
+function PersonalInfoForm() {
+  const navigate = useNavigate(); 
+
+  const isMobile = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
+
+  if (!isMobile()){
+    return(
+      <div className="error-message">
+      <h1>Error: Access from desktop not allowed</h1>
+      <p>Please access this website from a mobile device.</p>
+    </div>
+    )
+  }
+
+ 
+  // personalInfo state
+  const [personalInfo, setPersonalInfo] = useState({
+    title: '',
+    gender: '',
+    surname: '',
+    firstName: '',
+    dob: '',
+    address: '',
+    suburb: '',
+    postcode: '',
+    contactNumber: '',
+    email: '',
+    emergencyContactName: '',
+    relationship: '',
+    emergencyContactNumber: '',
+    citizenChecked: '',
+    residencyChecked: '',
+    visaStatus: '',
+    abnName: '',
+    abn: '',
+    taxFileNumber: '',
+    fullName: '',
+    signature: '',
+  });
+
+
+  const handleInputChange = (e) => {
+
+    const { name, value } = e.target;
+    setPersonalInfo({ ...personalInfo, [name]: value });
+  };
+
+  // PreCheckList state
+  const [checklist, setChecklist] = useState({
+    passport: false,
+    visa: false,
+    driversLicence: false,
+    policeCheckCertificate: false,
+    workingWithChildrenCertificate: false
+  });
+
+  const [fileInputs, setFileInputs] = useState({
+    passport: null,
+    visa: null,
+    driversLicence: null,
+    policeCheckCertificate: null,
+    a: null
+  });
+
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setChecklist({ ...checklist, [name]: checked });
+  
+    if (checked) {
+      setFileInputs({ ...fileInputs, [name]: <input type="file" name={name} className='fileInput'/> });
+    } else {
+      const updatedFileInputs = { ...fileInputs };
+      delete updatedFileInputs[name];
+      setFileInputs(updatedFileInputs);
+    }
+  };
+
+
+  // BankingDetails state
+  const [bankingDetails, setBankingDetails] = useState({
+    bankName: '',
+    accountName: '',
+    bsbNumber: '',
+    accountNumber: ''
+  });
+
+  const handleBankInputChange = (e) => {
+    const { name, value } = e.target;
+    setBankingDetails({ ...bankingDetails, [name]: value });
+  };
+
+  // Availability state
+  const [availability, setAvailability] = useState({
+    permittedHours: '',
+    availableHours: '',
+    availableTime: '',
+    startTime: '',
+    endTime: ''
+  });
+
+  const handleAvailabilityInputChange = (e) => {
+    const { name, value } = e.target;
+    setAvailability({ ...availability, [name]: value });
+  };
+
+
+  // Availability days state
+  const [availabilityDay, setAvailabilityDay] = useState({
+    monday: false,
+    tuesday: false,
+    wednesday: false,
+    thursday: false,
+    friday: false,
+    saturday: false,
+    sunday: false
+  });
+
+  const handleAvailabilityDayChange = (e) => {
+    const { name, checked } = e.target;
+    setAvailabilityDay({ ...availabilityDay, [name]: checked });
+  };
+
+
+  // combining all the states
+    let allStates = {
+      personalInfo,
+      checklist,
+      bankingDetails,
+      availability,
+      availabilityDay,
+      fileInputs
+    };
+
+    const [selectedButton, setSelectedButton] = useState(''); 
+
+
+  const [formErrors, setFormErrors] = useState({});
+
+  const validateAvailabilityDays = () => {
+    const selectedDays = Object.values(availabilityDay);
+    const atLeastOneDaySelected = selectedDays.some(day => day === true);
+    if (!atLeastOneDaySelected) {
+      return false; // Return false if no day is selected
+    }
+    return true; // Return true if at least one day is selected
+  };
+
+  const validateForm = () => {
+    const errors = {};
+  
+    if (!personalInfo.title) {
+      errors.title = 'Title is required';
+    }
+  
+    if (!personalInfo.gender) {
+      errors.gender = 'Gender is required';
+    }
+  
+    if (!personalInfo.surname) {
+      errors.surname = 'Surname is required';
+    }
+  
+    if (!personalInfo.firstName) {
+      errors.firstName = 'First name is required';
+    }
+  
+    if (!personalInfo.dob) {
+      errors.dob = 'Date of birth is required';
+    }
+  
+    if (!personalInfo.address) {
+      errors.address = 'Address is required';
+    }
+  
+    if (!personalInfo.suburb) {
+      errors.suburb = 'Suburb is required';
+    }
+  
+    if (!personalInfo.postcode) {
+      errors.postcode = 'Postcode is required';
+    }
+    
+    if (!personalInfo.contactNumber) {
+      errors.contactNumber = 'Contact number is required';
+    }
+    if (!personalInfo.email) {
+      errors.email = 'Email is required';
+    }
+    if (!personalInfo.emergencyContactName) {
+      errors.emergencyContactName = 'Emergency contact name is required';
+    }
+  
+    if (!personalInfo.relationship) {
+      errors.relationship = 'Relationship is required';
+    }
+  
+    if (!personalInfo.emergencyContactNumber) {
+      errors.emergencyContactNumber = 'Emergency contact number is required';
+    }
+  
+    if (!personalInfo.citizenChecked) {
+      errors.citizenChecked = 'Citizenship status is required';
+    }
+  
+    if (!personalInfo.residencyChecked) {
+      errors.residencyChecked = 'Residency status is required';
+    }
+  
+    if (!personalInfo.visaStatus) {
+      errors.visaStatus = 'Visa status is required';
+    }
+    if (!personalInfo.abnName) {
+      errors.abnName = 'ABN name is required';
+    }
+    if (!personalInfo.abn) {
+      errors.abn = 'ABN is required';
+    }
+    if (!personalInfo.taxFileNumber) {
+      errors.taxFileNumber = 'Tax file number is required';
+    }
+
+    // Validate document uploads
+  if (!checklist.passport && fileInputs.passport === null) {
+    errors.passport = 'Passport copy is required';
+  }
+
+  if (!checklist.visa && fileInputs.visa === null) {
+    errors.visa = 'Visa copy is required';
+  }
+
+  if (!checklist.driversLicence && fileInputs.driversLicence === null) {
+    errors.driversLicence = 'Driver\'s licence copy is required';
+  }
+
+  if (!checklist.policeCheckCertificate && fileInputs.policeCheckCertificate === null) {
+    errors.policeCheckCertificate = 'Police check certificate copy is required';
+  }
+
+  if (!checklist.workingWithChildrenCertificate && fileInputs.workingWithChildrenCertificate === null) {
+    errors.workingWithChildrenCertificate = 'Working with children certificate copy is required';
+  }
+
+  // contract agreement validation
+  if (!personalInfo.fullName.trim()) {
+    errors.fullName = 'Full name is required';
+  }
+  if (!personalInfo.signature.trim()) {
+    errors.signature = 'Signature is required';
+  }
+
+  // Banking Details validation
+  if (!bankingDetails.bankName) {
+    errors.bankName = 'Bank name is required';
+  }
+
+  if (!bankingDetails.accountName) {
+    errors.accountName = 'Account name is required';
+  }
+
+  if (!bankingDetails.bsbNumber) {
+    errors.bsbNumber = 'BSB number is required';
+  } else if (!/^\d{3}-\d{3}$/i.test(bankingDetails.bsbNumber)) {
+    errors.bsbNumber = 'BSB number must be in the format XXX-XXX';
+  }
+
+  if (!bankingDetails.accountNumber) {
+    errors.accountNumber = 'Account number is required';
+  }
+
+  // Availability validation
+  if (!availability.permittedHours) {
+    errors.permittedHours = 'Permitted hours are required';
+  }
+
+  if (!availability.availableHours) {
+    errors.availableHours = 'Available hours are required';
+  }
+
+  if (!availability.availableTime) {
+    errors.availableTime = 'Availability time is required';
+  }
+
+  if (!availability.startTime || !availability.endTime) {
+    errors.startTime = 'Start and end time are required';
+    errors.endTime = 'Start and end time are required';
+  } else {
+    // Perform additional validation for start and end time if needed
+    const startTime = new Date(`2024-01-01T${availability.startTime}`);
+    const endTime = new Date(`2024-01-01T${availability.endTime}`);
+    if (startTime >= endTime) {
+      errors.startTime = 'Start time must be before end time';
+      errors.endTime = 'End time must be after start time';
+    }
+  }
+
+  const isAvailabilityDaysValid = validateAvailabilityDays();
+
+  if (!isAvailabilityDaysValid) {
+    // Display an error message or handle the validation failure
+    errors.availabilityDay = "Please select at least one day.";
+  }
+
+  
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbzxgK9ziqeEU9ZpUwLVq3X3nE6e4fI1tvpzNDrz1piciMy9QKTwnB4nKAzvKmHStnZA/exec"
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedSuccessfully, setsubmittedSuccessfully] = useState(false);
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("submitting")
+    if (validateForm()) {
+      setIsSubmitting(true); 
+      const formData = {
+        ...personalInfo,
+        ...checklist,
+        ...bankingDetails,
+        ...availability,
+        ...availabilityDay
+      };
+  
+      const formDataToSubmit = new FormData();
+  
+      // Append each key-value pair from formData to formDataToSubmit
+      for (const key in formData) {
+        formDataToSubmit.append(key, formData[key]);
+      }
+  
+
+  
+      // Perform form submission using fetch
+      fetch(scriptUrl, {
+        method: 'POST',
+        body: formDataToSubmit
+      })
+      .then(response => {
+        setIsSubmitting(false); 
+        if (response.ok) {
+          setsubmittedSuccessfully(true);
+          console.log('Form submitted successfully');
+          setsubmittedSuccessfully(true);
+        } else {
+          console.error('Form submission failed');
+
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Handle error cases
+      });
+    } else {
+      console.log('Form has errors');
+    }
+  };
+
+  return (
+    <React.Fragment>
+        <Header heading="Contractor Detail Form" subHeading="Please fill in your details below"/>
+      <form onSubmit={handleSubmit}>
+
+      <div className="boxContent">
+
+      <div className="container">
+      <div className="Question">Title</div>
+      <div className="answer">
+        <select
+          name="title"
+          value={personalInfo.title}
+          onChange={handleInputChange}
+          className='dropdown'>
+          <option value="" disabled>Please select...</option>
+          <option value="Mr">Mr</option>
+          <option value="Mrs">Mrs</option>
+          <option value="Miss">Miss</option>
+          <option value="Ms">Ms</option>
+        </select>
+        <div>
+        {formErrors.title && <div className="error-message">{formErrors.title}</div>}
+        </div>
+      </div>
+      </div>
+      
+      <div className="container">
+      <div className="Question">Gender</div>
+      <div>
+      <div className="ButtonContainer">
+        <button
+         type="button"
+          className={selectedButton === 'Male' ? 'active' : ''}
+          name="gender"
+          value="Male"
+          onClick={()=>{handleInputChange({ target: { name: 'gender', value: 'Male' } }); setSelectedButton("Male")}}
+        >
+          Male
+        </button>
+        <button
+         type="button"
+          className={selectedButton === 'Female' ? 'active' : ''}
+          name="gender"
+          value="Female"
+          onClick={()=>{handleInputChange({ target: { name: 'gender', value: 'Female' } }); setSelectedButton("Female")}}
+        >
+          Female
+        </button>
+        <button
+         type="button"
+          className={selectedButton === 'Others' ? 'active' : ''}
+          name="gender"
+          value="Others"
+          onClick={()=>{handleInputChange({ target: { name: 'gender', value: 'Others' } }); setSelectedButton("Others")}}
+        >
+          Others
+        </button>
+      </div>
+      <div>
+        {formErrors.gender && <div className="error-message">{formErrors.gender}</div>}
+        </div>
+        </div>
+    </div>
+      
+        <div className="lineContainer">
+          <div className="QuestionLine">Surname</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="surname"
+              value={personalInfo.surname}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.surname && <div className="error-message">{formErrors.surname}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">First name</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="firstName"
+              value={personalInfo.firstName}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.firstName&& <div className="error-message">{formErrors.firstName}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Date of Birth</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="date"
+              name="dob"
+              value={personalInfo.dob}
+              onChange={handleInputChange}
+              className='dateLine'
+            />
+          </div>
+          <div>
+          {formErrors.dob && <div className="error-message">{formErrors.dob}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Address</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="address"
+              value={personalInfo.address}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.address && <div className="error-message">{formErrors.address}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Suburb</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="suburb"
+              value={personalInfo.suburb}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.suburb && <div className="error-message">{formErrors.suburb}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Postcode</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="postcode"
+              value={personalInfo.postcode}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.postcode && <div className="error-message">{formErrors.postcode}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Contact Number</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="contactNumber"
+              value={personalInfo.contactNumber}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.contactNumber && <div className="error-message">{formErrors.contactNumber}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Email</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="email"
+              name="email"
+              value={personalInfo.email}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.email && <div className="error-message">{formErrors.email}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Emergency Contact Name</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="emergencyContactName"
+              value={personalInfo.emergencyContactName}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.emergencyContactName && <div className="error-message">{formErrors.emergencyContactName}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Relationship</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="relationship"
+              value={personalInfo.relationship}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.relationship && <div className="error-message">{formErrors.relationship}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Emergency Contact Number</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="emergencyContactNumber"
+              value={personalInfo.emergencyContactNumber}
+              onChange={handleInputChange}
+              className='inputLine'
+            />
+          </div>
+          <div>
+          {formErrors.emergencyContactNumber && <div className="error-message">{formErrors.emergencyContactNumber}</div>}
+        </div>
+        </div>
+        </div>
+        
+        <div className="lineContainer">
+          <div className="QuestionLine">Are you an Australian Citizen?</div>
+          <div>
+          <div className="answerLine">
+            <label className='answerText'> <input type="checkbox" name="citizenChecked" value="Yes" checked={personalInfo.citizenChecked === 'Yes'} onChange={handleInputChange} className='checkbox'/>Yes</label>
+            <label className='answerText'> <input type="checkbox" name="citizenChecked" value="No" checked={personalInfo.citizenChecked === 'No'} onChange={handleInputChange} className='checkbox'/>No</label>
+          </div>
+          <div>
+          {formErrors.citizenChecked && <div className="error-message">{formErrors.citizenChecked}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">If no, do you have Residency Status?</div>
+          <div>
+          <div className="answerLine">
+            <label className='answerText'> <input type="checkbox" name="residencyChecked" value="Yes" checked={personalInfo.residencyChecked === 'Yes'} onChange={handleInputChange} className='checkbox'/>Yes</label>
+            <label className='answerText'> <input type="checkbox" name="residencyChecked" value="No" checked={personalInfo.residencyChecked === 'No'} onChange={handleInputChange} className='checkbox'/>No</label>
+          </div>
+          <div>
+          {formErrors.residencyChecked && <div className="error-message">{formErrors.residencyChecked}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine"><b>Visa Status</b></div>
+          <div>
+          <div className="answerLineCheckBox">
+            <label className='answerText'>
+              <input
+                type="checkbox"
+                name="visaStatus"
+                value="Work Visa"
+                checked={personalInfo.visaStatus === 'Work Visa'}
+                onChange={handleInputChange}
+                className='checkbox'
+              />
+              Work Visa
+            </label>
+            <label className='answerText'>
+              <input
+                type="checkbox"
+                name="visaStatus"
+                value="Student Visa"
+                checked={personalInfo.visaStatus === 'Student Visa'}
+                onChange={handleInputChange}
+                className='checkbox'
+              />
+              Student Visa
+            </label>
+            <label className='answerText'>
+              <input
+                type="checkbox"
+                name="visaStatus"
+                value="Other"
+                checked={personalInfo.visaStatus === 'Other'}
+                onChange={handleInputChange}
+                className='checkbox'
+              />
+              Other
+            </label>
+          </div>
+          <div>
+          {formErrors.visaStatus && <div className="error-message" style={{textAlign:"center"}}>{formErrors.visaStatus}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="subHeading"><h3>NOTE: YOU MUST PROVIDE A COPY OF YOUR VISA</h3></div>
+
+
+        <div className="VisaDetailsContainer">
+          <div className="lineContainer">
+            <div className="QuestionLine"><b>ABN</b> Name: </div>
+            <div>
+            <div className="answerLine">
+              <input
+                type="text"
+                name="abnName"
+                value={personalInfo.abnName}
+                onChange={handleInputChange}
+                className='inputLine'
+              />
+            </div>
+            <div>
+            {formErrors.abnName && <div className="error-message">{formErrors.abnName}</div>}
+            </div>
+            </div>
+          </div>
+          <div className="lineContainer">
+            <div className="QuestionLine"><b>ABN:</b></div>
+            <div>
+            <div className="answerLine">
+              <input
+                type="text"
+                name="abn"
+                value={personalInfo.abn}
+                onChange={handleInputChange}
+                className='inputLine'
+              />
+            </div>
+            <div>
+            {formErrors.abn && <div className="error-message">{formErrors.abn}</div>}
+            </div>
+            </div>
+          </div>
+          <div className="lineContainer">
+            <div className="QuestionLine"><b>Tax File Number:</b></div>
+            <div>
+            <div className="answerLine">
+              <input
+                type="text"
+                name="taxFileNumber"
+                value={personalInfo.taxFileNumber}
+                onChange={handleInputChange}
+                className='inputLine'
+              />
+            </div>
+            <div>
+            {formErrors.taxFileNumber && <div className="error-message">{formErrors.taxFileNumber}</div>}
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<br /><br />
+
+          <div className="boxContent">
+          <div className="heading"><h3>Pre Start Check List</h3></div>
+          <div className="subHeading"><h4>We require the following information to be provided prior to commencement:</h4></div>
+            <div className='answerCheckbox' >
+              <label className='answerLineCheckBox'><input type="checkbox" name="passport" checked={checklist.passport} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Passport</label>
+              {fileInputs.passport}
+              <div>
+              {formErrors.passport && <div className="error-message">{formErrors.passport}</div>}
+            </div><br />
+              <label className='answerLineCheckBox'><input type="checkbox" name="visa" checked={checklist.visa} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Visa</label>
+              {fileInputs.visa}
+              <div>
+              {formErrors.visa && <div className="error-message">{formErrors.visa}</div>}
+            </div>
+              <br />
+              <label className='answerLineCheckBox'><input type="checkbox" name="driversLicence" checked={checklist.driversLicence} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Drivers Licence</label>
+              {fileInputs.driversLicence}
+              <div>
+              {formErrors.driversLicence && <div className="error-message">{formErrors.driversLicence}</div>}
+            </div>
+              <br />
+              <label className='answerLineCheckBox'><input type="checkbox" name="policeCheckCertificate" checked={checklist.policeCheckCertificate} onChange={handleCheckboxChange} className='checkbox'/>A copy of your National Police Check Certificate</label>
+              {fileInputs.policeCheckCertificate}
+              <div>
+              {formErrors.policeCheckCertificate && <div className="error-message">{formErrors.policeCheckCertificate}</div>}
+            </div>
+              <br />
+              <label className='answerLineCheckBox'><input type="checkbox" name="workingWithChildrenCertificate" checked={checklist.workingWithChildrenCertificate} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Working with Children Certificate (if requested)</label><br />
+              {fileInputs.workingWithChildrenCertificate}
+              <div>
+              {formErrors.workingWithChildrenCertificate && <div className="error-message">{formErrors.workingWithChildrenCertificate}</div>}
+            </div>
+              <br />
+            </div>
+          </div>
+
+      <br /><br />
+
+    <div className="boxContent">
+      <div className="heading"><u>CONTRACTOR AGREEMENT</u></div>
+      <br />
+      <label className='answerText'>I, </label>
+      <input 
+        type="text" 
+        name="fullName" 
+        placeholder="Your full name" 
+        value={personalInfo.fullName}
+        onChange={handleInputChange}
+        className={formErrors.fullName ? 'inputLine error' : 'inputLine'}
+      />
+      <label className='answerText'>declare that the information provided is true and current.</label><br />
+      <br />
+      <label className='answerText'>Signed</label>
+      <input 
+        type="text" 
+        name="signature" 
+        placeholder="Your signature" 
+        value={personalInfo.signature}
+        onChange={handleInputChange}
+        className={formErrors.signature ? 'inputLine error' : 'inputLine'}
+      />
+      <br /><br />
+      <div className="subHeading highlighted">
+        I also understand that when vacating/leaving my position I am required to provide a minimum of 14 days’ notice in writing and failure to do so will forfeit payment of my last invoice.
+      </div>
+      <br />
+
+      <div>
+        <Canvas/>
+      </div>
+    </div>
+<br /><br />
+
+    <div className="boxContent">
+      <div className="heading"><h3>Banking Details</h3></div><br />
+      <div className="lineContainer">
+        <div className="QuestionLine">Bank name:</div>
+        <div>
+        <div className="answerLine">
+          <input 
+            type="text" 
+            name="bankName" 
+            value={bankingDetails.bankName} 
+            onChange={handleBankInputChange} 
+            className='inputLine'
+          />
+        </div>
+        <div>
+              {formErrors.bankName && <div className="error-message">{formErrors.bankName}</div>}
+          </div>
+            </div>
+      </div>
+      <div className="lineContainer">
+        <div className="QuestionLine">Account name:</div>
+        <div>
+        <div className="answerLine">
+          <input 
+            type="text" 
+            name="accountName" 
+            value={bankingDetails.accountName} 
+            onChange={handleBankInputChange} 
+            className='inputLine'
+          />
+        </div>
+        <div>
+              {formErrors.accountName && <div className="error-message">{formErrors.accountName}</div>}
+          </div>
+          </div>
+      </div>
+      <div className="lineContainer">
+        <div className="QuestionLine">BSB number:</div>
+        <div>
+        <div className="answerLine">
+          <input 
+            type="text" 
+            name="bsbNumber" 
+            value={bankingDetails.bsbNumber} 
+            onChange={handleBankInputChange} 
+            className='inputLine'
+          />
+        </div>
+        <div>
+              {formErrors.bsbNumber && <div className="error-message">{formErrors.bsbNumber}</div>}
+          </div>
+          </div>
+      </div>
+      <div className="lineContainer">
+        <div className="QuestionLine">Account number:</div>
+        <div>
+        <div className="answerLine">
+          <input 
+            type="text" 
+            name="accountNumber" 
+            value={bankingDetails.accountNumber} 
+            onChange={handleBankInputChange} 
+            className='inputLine'
+          />
+        </div>
+        <div>
+              {formErrors.accountNumber && <div className="error-message">{formErrors.accountNumber}</div>}
+          </div>
+          </div>
+      </div>
+    </div>
+<br /><br />
+
+      
+      <div className="boxContent">
+      <div className="lineContainer">
+        <div className="QuestionLine">How many hours are you permitted to work each week?</div>
+        <div>
+        <div className="answerLine">
+          <input 
+            type="text" 
+            name="permittedHours" 
+            value={availability.permittedHours} 
+            onChange={handleAvailabilityInputChange} 
+            className='inputLine'
+          />
+        </div>
+        <div>
+              {formErrors.permittedHours && <div className="error-message">{formErrors.permittedHours}</div>}
+          </div>
+          </div>
+      </div>
+      <div className="lineContainer">
+        <div className="QuestionLine">How many hours are available to work each week?</div>
+        <div>
+        <div className="answerLine">
+          <input 
+            type="text" 
+            name="availableHours" 
+            value={availability.availableHours} 
+            onChange={handleAvailabilityInputChange} 
+            className='inputLine'
+          />
+        </div>
+        <div>
+              {formErrors.availableHours && <div className="error-message">{formErrors.availableHours}</div>}
+          </div>
+          </div>
+      </div>
+      <div className="lineContainer">
+          <div className="QuestionLine">What is your availability? (PLEASE TICK) </div>
+          <div>
+          <div className="answerLineCheckBox">
+            <label className='answerCheckbox'>
+              <input
+                type="checkbox"
+                name="availableTime"
+                value="Morning"
+                checked={availability.availableTime === 'Morning'}
+                onChange={handleAvailabilityInputChange}
+              />
+              Morning
+            </label>
+            <label className='answerText'>
+              <input
+                type="checkbox"
+                name="availableTime"
+                value="During the day"
+                checked={availability.availableTime === 'During the day'}
+                onChange={handleAvailabilityInputChange}
+              />
+              During the day
+            </label>
+            <label className='answerText'>
+              <input
+                type="checkbox"
+                name="availableTime"
+                value="Evening"
+                checked={availability.availableTime === 'Evening'}
+                onChange={handleAvailabilityInputChange}
+              />
+              Evening
+            </label>
+          </div>
+          <div>
+              {formErrors.availableTime && <div className="error-message" style={{textAlign:"center"}}>{formErrors.availableTime}</div>}
+          </div>
+          </div>
+        </div>
+      <div className='lineContainer'>
+      <div className="QuestionLine">What times are you available to work (between what hours)? </div>
+      <div>
+        <div className="timeLine">
+        <input 
+          type="time" 
+          name="startTime" 
+          value={availability.startTime} 
+          onChange={handleAvailabilityInputChange} 
+          className='timeInput'
+        />&nbsp; TO &nbsp;
+        <input 
+          type="time" 
+          name="endTime" 
+          value={availability.endTime} 
+          onChange={handleAvailabilityInputChange} 
+          className='timeInput'
+        />
+        </div>
+        <div>
+        {formErrors.startTime && <div className="error-message" style={{textAlign:"center"}}>{formErrors.startTime}</div>}
+        </div>
+        </div>
+      </div>
+    </div>
+<br /><br />
+
+    <div className="boxContent">
+      <div className="lineContainer1">
+        <div className="Question">Which days are you available to work?</div>
+        <div>
+        <div className="answerLineVerticalCheckBox">
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="monday" 
+            checked={availabilityDay.monday} 
+            onChange={handleAvailabilityDayChange}
+            className='checkbox' 
+          />Mondays</label>
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="tuesday" 
+            checked={availabilityDay.tuesday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Tuesdays</label>
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="wednesday" 
+            checked={availabilityDay.wednesday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Wednesdays</label>
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="thursday" 
+            checked={availabilityDay.thursday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+
+          />Thursdays</label>
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="friday" 
+            checked={availabilityDay.friday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+
+          />Fridays</label>
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="saturday" 
+            checked={availabilityDay.saturday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Saturdays</label>
+          <label className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="sunday" 
+            checked={availabilityDay.sunday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Sundays</label>
+        </div>
+        <div>
+              {formErrors.availabilityDay && <div className="error-message" style={{textAlign:"center"}}>{formErrors.availabilityDay}</div>}
+          </div>
+          </div>
+      </div>
+    </div>
+    <button  type='submit' className="nextButton" disabled={isSubmitting}>Submit</button>
+    {isSubmitting && <Modal heading="Loading" subHeading="Please wait while your form is being submitted" buttonPresent="false" />}
+    {submittedSuccessfully && <Modal heading="Success" subHeading="Your Form has been submitted successfully" buttonPresent="true" close={setsubmittedSuccessfully} refresh={()=>{ window.location.reload()}}/>}
+
+    </form>
+
+
+    </React.Fragment>
+  )
+}
+
+export default PersonalInfoForm;

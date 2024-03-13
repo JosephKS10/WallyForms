@@ -1,0 +1,158 @@
+*{
+  margin: 0;
+  padding: 0;
+  
+}
+
+@media screen and (min-width: 769px) {
+  .error-message {
+    color: red;
+    font-size: 12px;
+    border: 1px solid red;
+    width: 80vw;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px; 
+    text-align: center;
+  }
+  
+
+}
+
+
+@media screen and (max-width: 768px) {
+
+
+
+
+.small{
+    font-size: 20px;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    color: #22215B;
+
+}
+.line{
+    display: flex;
+    flex-direction: row;
+    padding: 18px;
+    align-items: flex-start;
+}
+
+.center{
+    text-align: center;
+}
+.partyDetailContainer{
+    display: flex;
+    flex-direction: row;
+    margin-left: 5vw;
+    align-items: baseline;
+}
+.partyDetailQuestion{
+    font-size: 20px;
+    width: 8vw;
+    max-width: 8vw;
+    color: #22215B;
+    font-family: "Hind", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    color: #22215B;
+}
+.partyDetailAnswer{
+    font-size: 20px;
+    margin-left: 2vw;
+}
+.partyDetailInputLine{
+  width: 40vw;
+  height: 4vh;
+  border: none;
+  background-color: #D9D9D9;
+  color: #404040;
+  font-family: "Hind", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  padding-left: 2vw;
+  margin-left: 10vw;
+}
+.recitals {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-family: "Hind", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  }
+  
+  .recitals-content {
+    font-size: 18px;
+    line-height: 1.5;
+    font-family: "Hind", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .recitals-content p {
+    margin-bottom: 10px;
+    font-family: "Hind", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .agreement-heading {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-family: "Hind", sans-serif;
+    font-style: normal;
+  }
+  
+  .definitions {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  
+  .definitions p {
+    margin-bottom: 10px;
+  }
+  p {
+    margin-bottom: 0px;
+  }
+  .right{
+    margin-left: 5vw;
+  }
+  .listLine{
+    display: flex;
+    flex-direction: row;
+  }
+  .listPoint{
+    width: 3vw;
+  }
+  .listHeading{
+    width: 80vw;
+    margin-left: 10vw;
+  }
+  .listText{
+    width: 80vw;
+    margin-left: 10vw;
+
+  }
+  .schedule-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .schedule-table th, .schedule-table td {
+    border: 1px solid #000;
+    padding: 10px;
+  }
+
+
+  
+  .schedule-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+
+}

@@ -1,0 +1,63 @@
+@media screen and (max-width: 768px) {
+  .leftDesign {
+    background-image: url('../assets//elements/form-assets/leftWave.svg');
+    background-repeat: no-repeat;
+    z-index: -2;
+  }
+  .mainHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    padding-top: 3vh;
+    background-color: transparent;
+  }
+  .menuButton {
+    background-color: transparent;
+    margin-left: 2vw;
+    border: none;
+  }
+  .menuButton:active {
+    background-color: black;
+    color: white;
+  }
+  .fa-bars {
+    font-size: 39px;
+    background-color: transparent;
+    color: black;
+  }
+  .logo {
+    width: 100px;
+    padding-right: 2vw;
+    background-color: transparent;
+  }
+  .dropdownMenu {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 40vw;
+    z-index: 100;
+    position: relative;
+    top: -7.1vh;
+    margin-left: 2vw;
+  }
+  .dropdownMenu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  .dropdownMenu ul li {
+    padding: 10px 20px;
+  }
+  .dropdownMenu ul li a {
+    color: #333;
+    text-decoration: none;
+  }
+  .dropdownMenu ul li a:hover {
+    background-color: #f0f0f0;
+  }
+  .dropdownMenu ul li a.active {
+    color: blue; 
+  }
+}
