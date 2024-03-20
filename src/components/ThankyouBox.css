@@ -1,0 +1,20 @@
+.thank-center{
+    text-align: center;
+}
+.thank-heading{
+    font-size: 24px;
+    color: #22215B;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+.thank-text{
+    font-size: 18px;
+    color: #22215B;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+.thank-bottom{
+    color: #22215B3B;
+}

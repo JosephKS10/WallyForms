@@ -1,0 +1,896 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+import "../components/PersonalInfoForm.css"
+import Header from '../components/Header';
+import Modal from '../components/Modal';
+import ThankyouBox from '../components/ThankyouBox';
+
+import './Stage1.css'
+function Stage1() {
+  const navigate = useNavigate(); 
+
+  const isMobile = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
+
+  if (!isMobile()){
+    return(
+      <div className="error-message">
+      <h1>Error: Access from desktop not allowed</h1>
+      <p>Please access this website from a mobile device.</p>
+    </div>
+    )
+  }
+
+  const currentDate = new Date().toISOString().split('T')[0]; 
+ 
+
+  const [personalInfo, setPersonalInfo] = useState({
+    name: '',
+    date: currentDate,
+    suburb: '',
+    contactNumber: '',
+  });
+
+  const handleInputChange = (e) => {
+
+    const { name, value } = e.target;
+    setPersonalInfo({ ...personalInfo, [name]: value });
+  };
+
+  const [documentInfo, setDocumentInfo] = useState({
+    ownCar: '',
+    ownCarReason: '',
+    ABN: '',
+    ABNReason: '',
+    policeCheck: '',
+    policeCheckReason: '',
+    workingWithChildren: '',
+    previousExperience: '',
+    previousExperienceDuration: '',
+    previousExperienceReason: '',
+    currentJob: '',
+    hoursSpecified: '',
+    coupleOrIndividual: '',
+    partnerName: '',
+    partnerDocuments: '',
+  });
+
+  const handleDocumentChange = (question, value) => {
+    // Get the previous value of the checkbox
+    const prevValue = documentInfo[question];
+
+     setDocumentInfo({ ...documentInfo, [question]: value });
+
+    if (prevValue === 'No' && value === 'Yes' && documentInfo[`${question}Reason`] !== '') {
+        // setDocumentInfo({ ...documentInfo,  });
+        setDocumentInfo({ ...documentInfo, [`${question}Reason`]: '' });
+    }
+    };
+
+    const handleReasonChange = (e) => {
+        const { name, value } = e.target;
+        setDocumentInfo({ ...documentInfo, [name]: value });
+    };
+
+  // Availability state
+  const [time, setTime] = useState({
+    all: false,
+    startTimeMonday: '',
+    endTimeMonday: '',
+    startTimeTuesday: '',
+    endTimeTuesday: '',
+    startTimeWednesday: '',
+    endTimeWednesday: '',
+    startTimeThursday: '',
+    endTimeThursday: '',
+    startTimeFriday: '',
+    endTimeFriday: '',
+    startTimeSaturday: '',
+    endTimeSaturday: '',
+    startTimeSunday: '',
+    endTimeSunday: '',
+  });
+  
+  const handleTimeChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'all') {
+        let prevValue = time.all;
+        let actualValue;
+        if (!prevValue) {
+            // If the checkbox was unchecked before
+            const updatedTime = {};
+            // Check if the start time and end time for Monday are set
+            if (availabilityDay.Monday && time.startTimeMonday && time.endTimeMonday) {
+                // If conditions are met, set the same time for all selected days
+                Object.keys(availabilityDay).forEach(day => {
+                    if (availabilityDay[day]) {
+                        updatedTime[`startTime${day}`] = time.startTimeMonday;
+                        updatedTime[`endTime${day}`] = time.endTimeMonday;
+                    }
+                });
+                setTime({ ...time, ...updatedTime, all: true });
+                actualValue = true;
+            }
+        } else {
+            // If the checkbox was checked before, uncheck it and reset all days' times except for Monday
+            const updatedTime = {};
+            Object.keys(time).forEach(key => {
+                if (key.includes('startTime') || key.includes('endTime')) {
+                    const day = key.replace('startTime', '').replace('endTime', '');
+                    if (day !== 'Monday') {
+                        updatedTime[key] = '';
+                    }
+                }
+            });
+            setTime({ ...time, ...updatedTime, all: false });
+            actualValue = false;
+        }
+        // Update the start and end times based on the checkbox state
+        setTime(prevState => ({
+            ...prevState,
+            startTimeMonday: prevState.startTimeMonday || '',
+            endTimeMonday: prevState.endTimeMonday || '',
+            startTimeTuesday: prevState.startTimeTuesday || '',
+            endTimeTuesday: prevState.endTimeTuesday || '',
+            startTimeWednesday: prevState.startTimeWednesday || '',
+            endTimeWednesday: prevState.endTimeWednesday || '',
+            startTimeThursday: prevState.startTimeThursday || '',
+            endTimeThursday: prevState.endTimeThursday || '',
+            startTimeFriday: prevState.startTimeFriday || '',
+            endTimeFriday: prevState.endTimeFriday || '',
+            startTimeSaturday: prevState.startTimeSaturday || '',
+            endTimeSaturday: prevState.endTimeSaturday || '',
+            startTimeSunday: prevState.startTimeSunday || '',
+            endTimeSunday: prevState.endTimeSunday || '',
+            all: actualValue
+        }));
+    } else {
+        // Handle changes for individual time inputs
+        setTime({ ...time, [name]: value });
+    }
+};
+
+
+  const RenderTimer = ({startTime, endTime}) => {
+    return(
+        <div style={{marginBottom:10}}>
+      <div >Time</div>
+      <div>
+        <div style={{display:"flex"}}>
+        <input 
+          type="time" 
+          name={startTime} 
+          value={time[startTime]} 
+          onChange={handleTimeChange} 
+          className='timeInput'
+        />&nbsp;-&nbsp;
+        <input 
+          type="time" 
+          name={endTime}
+          value={time[endTime]} 
+          onChange={handleTimeChange} 
+          className='timeInput'
+        />
+        </div>
+        <div>
+        {formErrors.startTime && <div className="error-message" style={{textAlign:"center"}}>{formErrors.startTime}</div>}
+        </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Availability days state
+  const [availabilityDay, setAvailabilityDay] = useState({
+    all: false,
+    Monday: false,
+    Tuesday: false,
+    Wednesday: false,
+    Thursday: false,
+    Friday: false,
+    Saturday: false,
+    Sunday: false
+  });
+
+  const handleAvailabilityDayChange = (e) => {
+    const { name, checked } = e.target;
+    if (name === 'all') {
+        const updatedAvailabilityDay = Object.keys(availabilityDay).reduce((acc, day) => {
+            acc[day] = checked;
+            return acc;
+        }, {});
+        setAvailabilityDay(updatedAvailabilityDay);
+    } else {
+        setAvailabilityDay({ ...availabilityDay, [name]: checked });
+    }
+};
+
+
+
+  // combining all the states
+    let allStates = {
+      personalInfo,
+      documentInfo,
+      availabilityDay,
+      time,
+    };
+
+
+  const [formErrors, setFormErrors] = useState({});
+
+  const validateAvailabilityDays = () => {
+    const selectedDays = Object.values(availabilityDay);
+    const atLeastOneDaySelected = selectedDays.some(day => day === true);
+    if (!atLeastOneDaySelected) {
+      return false; // Return false if no day is selected
+    }
+    return true; // Return true if at least one day is selected
+  };
+  console.log(formErrors)
+  const validateForm = () => {
+    const errors = {};
+  
+    if (!personalInfo.name) {
+      errors.name = 'Name is required';
+    }
+  
+    if (!personalInfo.suburb) {
+      errors.suburb = 'Suburb is required';
+    }
+
+    if (!personalInfo.contactNumber) {
+      errors.contactNumber = 'Contact number is required';
+    }
+
+    if(!documentInfo.ownCar){
+        errors.ownCar = 'This is required';
+    }
+    if(documentInfo.ownCar==="No" && !documentInfo.ownCarReason){
+        errors.ownCarReason = 'This is required';
+    }
+    if(!documentInfo.ABN){
+        errors.ABN = 'This is required';
+    }
+    if(documentInfo.ABN==="No" && !documentInfo.ABNReason){
+        errors.ABNReason = 'This is required';
+    }
+    if(!documentInfo.policeCheck){
+        errors.policeCheck = 'This is required';
+    }
+    if(documentInfo.policeCheck==="No" && !documentInfo.policeCheckReason){
+        errors.policeCheckReason = 'This is required';
+    }
+    if(!documentInfo.workingWithChildren){
+        errors.workingWithChildren = 'This is required';
+    }
+    if(!documentInfo.previousExperience){
+        errors.previousExperience = 'This is required';
+    }
+    if(documentInfo.previousExperience==="Yes" && !documentInfo.previousExperienceReason && !documentInfo.previousExperienceDuration){
+        errors.previousExperienceReason = 'Both are required';
+    }
+    if(!documentInfo.currentJob){
+        errors.currentJob = 'This is required';
+    }
+    if(documentInfo.currentJob==="Yes" && !documentInfo.hoursSpecified){
+        errors.currentJobReason = 'This is required';
+    }
+    if(!documentInfo.coupleOrIndividual){
+        errors.coupleOrIndividual = 'This is required';
+    }
+    if(documentInfo.coupleOrIndividual === "Couple" && !documentInfo.partnerName && !documentInfo.partnerDocuments){
+        errors.coupleOrIndividualReason = 'Both are required';
+    }
+
+  const isAvailabilityDaysValid = validateAvailabilityDays();
+
+  if (!isAvailabilityDaysValid) {
+    // Display an error message or handle the validation failure
+    errors.availabilityDay = "Please select at least one day.";
+  }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbxnJiqcynLV4c3qm5BSGvU_Tm-06BomG60YiYoANIblhAdMLx7X1bmpVbwusdH5QKrk/exec"
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedSuccessfully, setsubmittedSuccessfully] = useState(false);
+  const [subHeading, setSubHeading] = useState("Please fill in your details below")
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("submitting")
+    if (validateForm()) {
+      setIsSubmitting(true); 
+      const formData = {
+        ...personalInfo,
+        ...documentInfo,
+        ...availabilityDay,
+        ...time
+      };
+  
+      const formDataToSubmit = new FormData();
+  
+      for (const key in formData) {
+        formDataToSubmit.append(key, formData[key]);
+      }
+  
+      fetch(scriptUrl, {
+        method: 'POST',
+        body: formDataToSubmit
+      })
+      .then(response => {
+        setIsSubmitting(false); 
+        if (response.ok) {
+            setSubHeading("")
+          setsubmittedSuccessfully(true);
+          console.log('Form submitted successfully');
+          setsubmittedSuccessfully(true);
+        } else {
+          console.error('Form submission failed');
+
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Handle error cases
+      });
+    } else {
+      console.log('Form has errors');
+    }
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+}, []); 
+
+  return (
+    <React.Fragment>
+        <Header heading="AECFM Personal Information Form" subHeading={subHeading} visibility="collapse"/>
+        <br /><br />
+      <form onSubmit={handleSubmit}>
+    {submittedSuccessfully || 
+    <div>
+              <div className="boxContent">
+        <div className="lineContainer">
+          <div className="QuestionLine">Name</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="name"
+              value={personalInfo.name}
+              onChange={handleInputChange}
+              className='inputLine'
+              placeholder='Enter name...'
+            />
+          </div>
+          <div>
+          {formErrors.name && <div className="error-message">{formErrors.name}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Date</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="date"
+              name="date"
+              value={personalInfo.date}
+              className='dateLine'
+              disabled
+            />
+          </div>
+          <div>
+          {formErrors.dob && <div className="error-message">{formErrors.dob}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Number</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="number"
+              name="contactNumber"
+              value={personalInfo.contactNumber}
+              onChange={handleInputChange}
+              className='inputLine'
+              placeholder='Enter contact number...'
+
+            />
+          </div>
+          <div>
+          {formErrors.contactNumber && <div className="error-message">{formErrors.contactNumber}</div>}
+        </div>
+        </div>
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Suburb</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="suburb"
+              value={personalInfo.suburb}
+              onChange={handleInputChange}
+              className='inputLine'
+              placeholder='Enter suburb...'
+            />
+          </div>
+          <div>
+          {formErrors.suburb && <div className="error-message">{formErrors.suburb}</div>}
+        </div>
+        </div>
+        </div>
+      </div>
+
+<br />
+        <div className="boxContent">
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Own Car</div>
+          <div>
+          <div className="answerLine">
+            <label className='answerText'> <input
+              type="checkbox"
+              name="ownCar"
+              value="Yes"
+              checked={documentInfo.ownCar === 'Yes'}
+              onChange={(e) => handleDocumentChange('ownCar', e.target.value)}
+              className='checkbox'
+            />Yes</label>
+            <label className='answerText'> <input
+              type="checkbox"
+              name="ownCar"
+              value="No"
+              checked={documentInfo.ownCar === 'No'}
+              onChange={(e) => handleDocumentChange('ownCar', e.target.value)}
+              className='checkbox'
+            />No</label>
+          </div>
+          <div>
+          {formErrors.ownCar && <div className="error-message">{formErrors.ownCar}</div>}
+        </div>
+        </div>
+        </div>
+        <div>
+        {documentInfo['ownCar'] === "No" && (
+            <div>
+            <div className='noExtraField'>
+            <p className='noExtraQuestion'>If no, when will you get a car?</p>
+            <input
+                type="text"
+                name='ownCarReason'
+                value={documentInfo.ownCarReason}
+                onChange={handleReasonChange}
+                className='inputLine'
+                placeholder="for ex 1 week..."
+            />
+            </div> 
+            <div>
+            {formErrors.ownCarReason && <div className="error-message">{formErrors.ownCarReason}</div>}
+            </div> 
+            </div>  )}
+        </div>
+       
+
+        <div className="lineContainer">
+          <div className="QuestionLine">ABN</div>
+          <div>
+          <div className="answerLine">
+            <label className='answerText'> <input
+              type="checkbox"
+              name="ABN"
+              value="Yes"
+              checked={documentInfo.ABN === 'Yes'}
+              onChange={(e) => handleDocumentChange('ABN', e.target.value)}
+              className='checkbox'
+            />Yes</label>
+            <label className='answerText'> <input
+              type="checkbox"
+              name="ABN"
+              value="No"
+              checked={documentInfo.ABN === 'No'}
+              onChange={(e) => handleDocumentChange('ABN', e.target.value)}
+              className='checkbox'
+            />No</label>
+          </div>
+          <div>
+          {formErrors.ABN && <div className="error-message">{formErrors.ABN}</div>}
+        </div>
+        </div>
+        </div>
+        <div>
+         {documentInfo['ABN'] === "No" && (
+            <div>
+            <div className='noExtraField'>
+            <p className='noExtraQuestion'>If no, when will you get ABN?</p>
+            <input
+                type="text"
+                name='ABNReason'
+                value={documentInfo.ABNReason}
+                onChange={handleReasonChange}
+                className='inputLine'
+                placeholder="for ex 1 week..."            />
+            </div> 
+            <div>
+            {formErrors.ABNReason && <div className="error-message">{formErrors.ABNReason}</div>}
+            </div>  
+            </div>  )}
+        </div>
+
+        
+        <div className="lineContainer">
+          <div className="QuestionLine">Police Check</div>
+          <div>
+          <div className="answerLine">
+            <label className='answerText'>
+            <input
+              type="checkbox"
+              name="policeCheck"
+              value="Yes"
+              checked={documentInfo.policeCheck === 'Yes'}
+              onChange={(e) => handleDocumentChange('policeCheck', e.target.value)}
+              className='checkbox'
+            />Yes</label>
+            <label className='answerText'> 
+            <input
+              type="checkbox"
+              name="policeCheck"
+              value="No"
+              checked={documentInfo.policeCheck === 'No'}
+              onChange={(e) => handleDocumentChange('policeCheck', e.target.value)}
+              className='checkbox'
+            />No</label>
+          </div>
+          <div>
+          {formErrors.policeCheck && <div className="error-message">{formErrors.policeCheck}</div>}
+        </div>
+        </div>
+        </div>
+        <div>
+        {documentInfo['policeCheck'] === "No" && (
+            <div>
+            <div className='noExtraField'>
+            <p className='noExtraQuestion'>If no, when will you get Police Check?</p>
+            <input
+                type="text"
+                name='policeCheckReason'
+                value={documentInfo.policeCheckReason}
+                onChange={handleReasonChange}
+                className='inputLine'
+                placeholder="for ex 1 week..."            />
+            </div> 
+            <div>
+            {formErrors.policeCheckReason && <div className="error-message">{formErrors.policeCheckReason}</div>}
+            </div> 
+            </div>  )}
+        </div>
+
+        <div className="lineContainer">
+          <div className="QuestionLine">Working with Children Check</div>
+          <div>
+          <div className="answerLine">
+            <label className='answerText'> 
+            <input
+              type="checkbox"
+              name="workingWithChildren"
+              value="Yes"
+              checked={documentInfo.workingWithChildren === 'Yes'}
+              onChange={(e) => handleDocumentChange('workingWithChildren', e.target.value)}
+              className='checkbox'
+            />Yes</label>
+            <label className='answerText'>
+            <input
+              type="checkbox"
+              name="workingWithChildren"
+              value="No"
+              checked={documentInfo.workingWithChildren === 'No'}
+              onChange={(e) => handleDocumentChange('workingWithChildren', e.target.value)}
+              className='checkbox'
+            />No</label>
+          </div>
+          <div>
+          {formErrors.workingWithChildren && <div className="error-message">{formErrors.workingWithChildren}</div>}
+        </div>
+        </div>
+        </div>
+        <div>
+        </div>
+        </div>
+
+<br /><br />
+
+<div className="boxContent">
+        <div className="lineContainer">
+          <div className="QuestionLine">Do you have any previous experience in commercial cleaning</div>
+          <div>
+          <div className="answerLine">
+            <label className='answerText'> <input
+              type="checkbox"
+              name="previousExperience"
+              value="Yes"
+              checked={documentInfo.previousExperience === 'Yes'}
+              onChange={(e) => handleDocumentChange('previousExperience', e.target.value)}
+              className='checkbox'
+            />Yes</label>
+            <label className='answerText'> <input
+              type="checkbox"
+              name="previousExperience"
+              value="No"
+              checked={documentInfo.previousExperience === 'No'}
+              onChange={(e) => handleDocumentChange('previousExperience', e.target.value)}
+              className='checkbox'
+            />No</label>
+          </div>
+          <div>
+          {formErrors.previousExperience && <div className="error-message">{formErrors.previousExperience}</div>}
+        </div>
+        </div>
+        </div>
+        <div>
+        {documentInfo['previousExperience'] === "Yes" && (
+            
+            <div className='noExtraField'>
+            <p className='noExtraQuestion'>specify years/months</p>
+            <input
+                type="text"
+                name='previousExperienceDuration'
+                value={documentInfo.previousExperienceDuration}
+                onChange={handleReasonChange}
+                className='inputLine'
+                placeholder="specify..."
+            />
+            </div> 
+            
+              )}
+        {documentInfo['previousExperience'] === "Yes" && (
+            <div>
+            <div className='noExtraField'>
+            <p className='noExtraQuestion'>Elaborate</p>
+            <textarea
+                type="text"
+                name='previousExperienceReason'
+                value={documentInfo.previousExperienceReason}
+                onChange={handleReasonChange}
+                className='inputLine'
+                placeholder="elaborate..."
+                rows={5}
+                style={{height: "20vw"}}
+            />
+            </div>
+            <div>
+          {formErrors.previousExperienceReason && <div className="error-message">{formErrors.previousExperienceReason}</div>}
+        </div> 
+            </div>    
+            )}
+
+        </div>
+        <div className="lineContainer">
+          <div className="QuestionLine">Do you have any current jobs</div>
+          <div>
+          <div className="answerLine">
+            <label className='answerText'> <input
+              type="checkbox"
+              name="currentJob"
+              value="Yes"
+              checked={documentInfo.currentJob === 'Yes'}
+              onChange={(e) => handleDocumentChange('currentJob', e.target.value)}
+              className='checkbox'
+            />Yes</label>
+            <label className='answerText'> <input
+              type="checkbox"
+              name="currentJob"
+              value="No"
+              checked={documentInfo.currentJob === 'No'}
+              onChange={(e) => handleDocumentChange('currentJob', e.target.value)}
+              className='checkbox'
+            />No</label>
+          </div>
+          <div>
+          {formErrors.currentJob && <div className="error-message">{formErrors.currentJob}</div>}
+        </div>
+        </div>
+        </div>
+        <div>
+        {documentInfo['currentJob'] === "Yes" && (
+            <div>
+               <div className='noExtraField'>
+               <p className='noExtraQuestion'>Specify hours for the job</p>
+               <input
+                   type="text"
+                   name='hoursSpecified'
+                   value={documentInfo.hoursSpecified}
+                   onChange={handleReasonChange}
+                   className='inputLine'
+                   placeholder="for ex 3PM to 6PM"
+                   rows={5}
+               />
+               </div> 
+               <div>
+          {formErrors.currentJobReason && <div className="error-message">{formErrors.currentJobReason}</div>}
+        </div> 
+               </div>
+                )}
+        </div>
+        </div>
+
+<br /><br />
+
+<div className="boxContent">
+        <div className="lineContainer">
+          <div className="QuestionLine">Will you work as a couple or individual</div>
+          <div>
+          <div className="answerLine">
+            <label className='answerText'> <input
+              type="checkbox"
+              name="coupleOrIndividual"
+              value="Couple"
+              checked={documentInfo.coupleOrIndividual === 'Couple'}
+              onChange={(e) => handleDocumentChange('coupleOrIndividual', e.target.value)}
+              className='checkbox'
+            />Couple</label>
+            <label className='answerText'> <input
+              type="checkbox"
+              name="coupleOrIndividual"
+              value="Individual"
+              checked={documentInfo.coupleOrIndividual === 'Individual'}
+              onChange={(e) => handleDocumentChange('coupleOrIndividual', e.target.value)}
+              className='checkbox'
+            />Individual</label>
+          </div>
+          <div>
+          {formErrors.coupleOrIndividual && <div className="error-message">{formErrors.coupleOrIndividual}</div>}
+        </div>
+        </div>
+        </div>
+        {documentInfo['coupleOrIndividual'] === "Couple" && (
+            <div className='noExtraField'>
+            <p className='noExtraQuestion'><b>Partner name</b></p>
+            <input
+                type="text"
+                name='partnerName'
+                value={documentInfo.partnerName}
+                onChange={handleReasonChange}
+                className='inputLine'
+                placeholder="Enter name..."
+            />
+            </div>    )}
+            {documentInfo['coupleOrIndividual'] === "Couple" && (
+                <div className="lineContainer">
+                <div className="QuestionLine">Does the partner have all the above mentioned documents?</div>
+                <div>
+                <div className="answerLine">
+                  <label className='answerText'> <input
+                    type="checkbox"
+                    name="partnerDocuments"
+                    value="Yes"
+                    checked={documentInfo.partnerDocuments === 'Yes'}
+                    onChange={(e) => handleDocumentChange('partnerDocuments', e.target.value)}
+                    className='checkbox'
+                  />Yes</label>
+                  <label className='answerText'> <input
+                    type="checkbox"
+                    name="partnerDocuments"
+                    value="No"
+                    checked={documentInfo.partnerDocuments === 'No'}
+                    onChange={(e) => handleDocumentChange('partnerDocuments', e.target.value)}
+                    className='checkbox'
+                  />No</label>
+                </div>
+                <div>
+                {formErrors.coupleOrIndividualReason && <div className="error-message">{formErrors.coupleOrIndividualReason}</div>}
+              </div>
+              </div>
+              </div>)}
+        </div>
+
+<br /><br />
+<div className="boxContent">
+      <div className="lineContainer1">
+        <div className="Question">Which days are you available to work?</div>
+        <div>
+        <div className="answerLineVerticalCheckBox">
+        <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="all" 
+            checked={availabilityDay.all} 
+            onChange={handleAvailabilityDayChange}
+            className='checkbox' 
+          />Through out the week</label>
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="Monday" 
+            checked={availabilityDay.Monday} 
+            onChange={handleAvailabilityDayChange}
+            className='checkbox' 
+          />Mondays</label>
+           {availabilityDay.Monday && <RenderTimer startTime="startTimeMonday" endTime="endTimeMonday"/>} 
+           {availabilityDay.Monday && <div><label  className='answerCheckboxVertical' style={{fontSize: "15px"}}><input 
+            type="checkbox" 
+            name="all" 
+            value="Yes"
+            checked={time.all} 
+            onChange={handleTimeChange}
+            className='checkbox' 
+          />Same time for all the selected days</label><br /></div>}
+
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="Tuesday" 
+            checked={availabilityDay.Tuesday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Tuesdays</label>
+           {availabilityDay.Tuesday &&<RenderTimer startTime="startTimeTuesday" endTime="endTimeTuesday"/>} 
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="Wednesday" 
+            checked={availabilityDay.Wednesday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Wednesdays</label>
+           {availabilityDay.Wednesday && <RenderTimer startTime="startTimeWednesday" endTime="endTimeWednesday"/>} 
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="Thursday" 
+            checked={availabilityDay.Thursday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Thursdays</label>
+           {availabilityDay.Thursday && <RenderTimer startTime="startTimeThursday" endTime="endTimeThursday"/>} 
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="Friday" 
+            checked={availabilityDay.Friday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Fridays</label>
+           {availabilityDay.Friday && <RenderTimer startTime="startTimeFriday" endTime="endTimeFriday"/>} 
+          <label  className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="Saturday" 
+            checked={availabilityDay.Saturday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Saturdays</label>
+           {availabilityDay.Saturday && <RenderTimer startTime="startTimeSaturday" endTime="endTimeSaturday"/>} 
+          <label className='answerCheckboxVertical'><input 
+            type="checkbox" 
+            name="Sunday" 
+            checked={availabilityDay.Sunday} 
+            onChange={handleAvailabilityDayChange} 
+            className='checkbox' 
+          />Sundays</label>
+           {availabilityDay.Sunday && <RenderTimer startTime="startTimeSunday" endTime="endTimeSunday"/>} 
+        </div>
+        <div>
+              {formErrors.availabilityDay && <div className="error-message" style={{textAlign:"center"}}>{formErrors.availabilityDay}</div>}
+          </div>
+          </div>
+      </div>
+    </div>
+    <br /><br />
+    
+
+    <button  type='submit' className="nextButton" disabled={isSubmitting}>Submit</button>
+    {isSubmitting && <Modal heading="Loading" subHeading="Please wait while your form is being submitted" buttonPresent="false" />}
+        </div>}
+    {submittedSuccessfully && <ThankyouBox/>}
+
+    </form>
+
+
+    </React.Fragment>
+  )
+}
+
+export default Stage1;
+

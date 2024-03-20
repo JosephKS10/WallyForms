@@ -15,6 +15,7 @@
   .menuButton {
     background-color: transparent;
     margin-left: 2vw;
+    margin-right: 2vw;
     border: none;
   }
   .menuButton:active {
@@ -36,11 +37,19 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 40vw;
+    width: 65vw;
+    height: 100vh;
     z-index: 100;
-    position: relative;
-    top: -7.1vh;
-    margin-left: 2vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .menuHeader{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    padding-top: 3vh;
+    margin-bottom: 2vh;
   }
   .dropdownMenu ul {
     list-style-type: none;
@@ -48,7 +57,10 @@
     margin: 0;
   }
   .dropdownMenu ul li {
-    padding: 10px 20px;
+    padding: 2vh 4vh;
+    border-top: 0.5px #ccc solid;
+    border-bottom: 0.5px #ccc solid;
+
   }
   .dropdownMenu ul li a {
     color: #333;

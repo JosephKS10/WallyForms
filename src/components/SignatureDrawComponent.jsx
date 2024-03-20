@@ -25,6 +25,7 @@ const Canvas = (props) => {
 
   return (
     <div>
+      <div>Signature</div>
       <ReactSketchCanvas
         ref={canvasRef}
         strokeWidth={4}

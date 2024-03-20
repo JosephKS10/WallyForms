@@ -4,7 +4,7 @@ import Canvas from './SignatureDrawComponent';
 import { useNavigate } from 'react-router-dom'; 
 import Header from './Header';
 import Modal from './Modal';
-
+import axios from 'axios'
 
 function PersonalInfoForm() {
   const navigate = useNavigate(); 
@@ -65,79 +65,36 @@ function PersonalInfoForm() {
   });
 
   const [fileInputs, setFileInputs] = useState({
-    passport: null,
-    visa: null,
-    driversLicence: null,
-    policeCheckCertificate: null,
-    a: null
+    passport: "null",
+    visa: "null",
+    driversLicence: "null",
+    policeCheckCertificate: "null",
+    workingWithChildrenCertificate: "null"
   });
 
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
     setChecklist({ ...checklist, [name]: checked });
-  
-    if (checked) {
-      setFileInputs({ ...fileInputs, [name]: <input type="file" name={name} className='fileInput'/> });
-    } else {
-      const updatedFileInputs = { ...fileInputs };
-      delete updatedFileInputs[name];
-      setFileInputs(updatedFileInputs);
-    }
   };
 
-
-  // BankingDetails state
-  const [bankingDetails, setBankingDetails] = useState({
-    bankName: '',
-    accountName: '',
-    bsbNumber: '',
-    accountNumber: ''
-  });
-
-  const handleBankInputChange = (e) => {
-    const { name, value } = e.target;
-    setBankingDetails({ ...bankingDetails, [name]: value });
-  };
-
-  // Availability state
-  const [availability, setAvailability] = useState({
-    permittedHours: '',
-    availableHours: '',
-    availableTime: '',
-    startTime: '',
-    endTime: ''
-  });
-
-  const handleAvailabilityInputChange = (e) => {
-    const { name, value } = e.target;
-    setAvailability({ ...availability, [name]: value });
-  };
+  const handleFileChange = (event, name) => {
+    const file = event.target.files[0];
+    
+    // Read the file data
+    const reader = new FileReader();
+    reader.onload = () => {
+        // Encode the file data in base64
+        const base64Data = reader.result.split(',')[1]; // Extracting base64 data from Data URL
+        setFileInputs({ ...fileInputs, [name]: base64Data });
+    };
+    reader.readAsDataURL(file);
+};
 
 
-  // Availability days state
-  const [availabilityDay, setAvailabilityDay] = useState({
-    monday: false,
-    tuesday: false,
-    wednesday: false,
-    thursday: false,
-    friday: false,
-    saturday: false,
-    sunday: false
-  });
 
-  const handleAvailabilityDayChange = (e) => {
-    const { name, checked } = e.target;
-    setAvailabilityDay({ ...availabilityDay, [name]: checked });
-  };
-
-
-  // combining all the states
     let allStates = {
       personalInfo,
       checklist,
-      bankingDetails,
-      availability,
-      availabilityDay,
       fileInputs
     };
 
@@ -146,14 +103,7 @@ function PersonalInfoForm() {
 
   const [formErrors, setFormErrors] = useState({});
 
-  const validateAvailabilityDays = () => {
-    const selectedDays = Object.values(availabilityDay);
-    const atLeastOneDaySelected = selectedDays.some(day => day === true);
-    if (!atLeastOneDaySelected) {
-      return false; // Return false if no day is selected
-    }
-    return true; // Return true if at least one day is selected
-  };
+ 
 
   const validateForm = () => {
     const errors = {};
@@ -238,79 +188,13 @@ function PersonalInfoForm() {
     errors.visa = 'Visa copy is required';
   }
 
-  if (!checklist.driversLicence && fileInputs.driversLicence === null) {
-    errors.driversLicence = 'Driver\'s licence copy is required';
-  }
-
-  if (!checklist.policeCheckCertificate && fileInputs.policeCheckCertificate === null) {
-    errors.policeCheckCertificate = 'Police check certificate copy is required';
-  }
-
-  if (!checklist.workingWithChildrenCertificate && fileInputs.workingWithChildrenCertificate === null) {
-    errors.workingWithChildrenCertificate = 'Working with children certificate copy is required';
-  }
 
   // contract agreement validation
   if (!personalInfo.fullName.trim()) {
     errors.fullName = 'Full name is required';
   }
-  if (!personalInfo.signature.trim()) {
-    errors.signature = 'Signature is required';
-  }
 
-  // Banking Details validation
-  if (!bankingDetails.bankName) {
-    errors.bankName = 'Bank name is required';
-  }
 
-  if (!bankingDetails.accountName) {
-    errors.accountName = 'Account name is required';
-  }
-
-  if (!bankingDetails.bsbNumber) {
-    errors.bsbNumber = 'BSB number is required';
-  } else if (!/^\d{3}-\d{3}$/i.test(bankingDetails.bsbNumber)) {
-    errors.bsbNumber = 'BSB number must be in the format XXX-XXX';
-  }
-
-  if (!bankingDetails.accountNumber) {
-    errors.accountNumber = 'Account number is required';
-  }
-
-  // Availability validation
-  if (!availability.permittedHours) {
-    errors.permittedHours = 'Permitted hours are required';
-  }
-
-  if (!availability.availableHours) {
-    errors.availableHours = 'Available hours are required';
-  }
-
-  if (!availability.availableTime) {
-    errors.availableTime = 'Availability time is required';
-  }
-
-  if (!availability.startTime || !availability.endTime) {
-    errors.startTime = 'Start and end time are required';
-    errors.endTime = 'Start and end time are required';
-  } else {
-    // Perform additional validation for start and end time if needed
-    const startTime = new Date(`2024-01-01T${availability.startTime}`);
-    const endTime = new Date(`2024-01-01T${availability.endTime}`);
-    if (startTime >= endTime) {
-      errors.startTime = 'Start time must be before end time';
-      errors.endTime = 'End time must be after start time';
-    }
-  }
-
-  const isAvailabilityDaysValid = validateAvailabilityDays();
-
-  if (!isAvailabilityDaysValid) {
-    // Display an error message or handle the validation failure
-    errors.availabilityDay = "Please select at least one day.";
-  }
-
-  
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -329,9 +213,6 @@ function PersonalInfoForm() {
       const formData = {
         ...personalInfo,
         ...checklist,
-        ...bankingDetails,
-        ...availability,
-        ...availabilityDay
       };
   
       const formDataToSubmit = new FormData();
@@ -340,23 +221,20 @@ function PersonalInfoForm() {
       for (const key in formData) {
         formDataToSubmit.append(key, formData[key]);
       }
-  
 
-  
       // Perform form submission using fetch
       fetch(scriptUrl, {
         method: 'POST',
         body: formDataToSubmit
       })
       .then(response => {
-        setIsSubmitting(false); 
+        
         if (response.ok) {
-          setsubmittedSuccessfully(true);
+          handleFileUpload(e);
           console.log('Form submitted successfully');
-          setsubmittedSuccessfully(true);
         } else {
           console.error('Form submission failed');
-
+          setsubmittedSuccessfully(true);
         }
       })
       .catch(error => {
@@ -367,6 +245,36 @@ function PersonalInfoForm() {
       console.log('Form has errors');
     }
   };
+  console.log(formErrors)
+  function handleFileUpload(e) {
+    e.preventDefault();
+    console.log("Uploading Files")
+    const scriptUrl2 = "https://script.google.com/macros/s/AKfycbxAVjOLgslNda4L9BW851riaR6I-qXWIAS8_0coc7JwNsakr3uiGZslYRFS-0vXj5dM/exec"
+    const formData = new FormData();
+
+
+    formData.append("fullName", personalInfo.fullName);
+    formData.append("passport", fileInputs.passport);
+    formData.append("visa", fileInputs.visa);
+    formData.append("driversLicence", fileInputs.driversLicence);
+    formData.append("policeCheckCertificate", fileInputs.policeCheckCertificate);
+    formData.append("workingWithChildrenCertificate", fileInputs.workingWithChildrenCertificate);
+
+    fetch(scriptUrl2, {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        setIsSubmitting(false); 
+       setsubmittedSuccessfully(true);
+       console.log(response)
+      })
+      .catch((error) => {
+        // Handle errors
+        console.error("Error during file upload:", error);
+      });
+  }
+  
 
   return (
     <React.Fragment>
@@ -443,6 +351,7 @@ function PersonalInfoForm() {
               value={personalInfo.surname}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter surname...'
             />
           </div>
           <div>
@@ -461,6 +370,8 @@ function PersonalInfoForm() {
               value={personalInfo.firstName}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter first name...'
+
             />
           </div>
           <div>
@@ -497,6 +408,7 @@ function PersonalInfoForm() {
               value={personalInfo.address}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter address...'
             />
           </div>
           <div>
@@ -515,6 +427,7 @@ function PersonalInfoForm() {
               value={personalInfo.suburb}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter suburb...'
             />
           </div>
           <div>
@@ -528,11 +441,12 @@ function PersonalInfoForm() {
           <div>
           <div className="answerLine">
             <input
-              type="text"
+              type="number"
               name="postcode"
               value={personalInfo.postcode}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter postcode...'
             />
           </div>
           <div>
@@ -546,11 +460,13 @@ function PersonalInfoForm() {
           <div>
           <div className="answerLine">
             <input
-              type="text"
+              type="number"
               name="contactNumber"
               value={personalInfo.contactNumber}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter contact number...'
+
             />
           </div>
           <div>
@@ -569,6 +485,8 @@ function PersonalInfoForm() {
               value={personalInfo.email}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter email...'
+
             />
           </div>
           <div>
@@ -587,6 +505,7 @@ function PersonalInfoForm() {
               value={personalInfo.emergencyContactName}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter name...'
             />
           </div>
           <div>
@@ -605,6 +524,7 @@ function PersonalInfoForm() {
               value={personalInfo.relationship}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter relationship...'
             />
           </div>
           <div>
@@ -618,11 +538,12 @@ function PersonalInfoForm() {
           <div>
           <div className="answerLine">
             <input
-              type="text"
+              type="number"
               name="emergencyContactNumber"
               value={personalInfo.emergencyContactNumber}
               onChange={handleInputChange}
               className='inputLine'
+              placeholder='Enter contact number...'
             />
           </div>
           <div>
@@ -715,6 +636,8 @@ function PersonalInfoForm() {
                 value={personalInfo.abnName}
                 onChange={handleInputChange}
                 className='inputLine'
+                placeholder='Enter ABN name...'
+
               />
             </div>
             <div>
@@ -732,6 +655,8 @@ function PersonalInfoForm() {
                 value={personalInfo.abn}
                 onChange={handleInputChange}
                 className='inputLine'
+                placeholder='Enter ABN...'
+
               />
             </div>
             <div>
@@ -749,6 +674,8 @@ function PersonalInfoForm() {
                 value={personalInfo.taxFileNumber}
                 onChange={handleInputChange}
                 className='inputLine'
+                placeholder='Enter tax file number...'
+
               />
             </div>
             <div>
@@ -765,33 +692,31 @@ function PersonalInfoForm() {
           <div className="heading"><h3>Pre Start Check List</h3></div>
           <div className="subHeading"><h4>We require the following information to be provided prior to commencement:</h4></div>
             <div className='answerCheckbox' >
-              <label className='answerLineCheckBox'><input type="checkbox" name="passport" checked={checklist.passport} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Passport</label>
-              {fileInputs.passport}
+              <label className='answerLineCheckBox'><input type="checkbox" name="passport" checked={checklist.passport} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Passport*</label>
+              {checklist.passport && <input type="file" name="passport" className='fileInput' onChange={(e)=>{handleFileChange(e, "passport")}}/>}
               <div>
               {formErrors.passport && <div className="error-message">{formErrors.passport}</div>}
             </div><br />
-              <label className='answerLineCheckBox'><input type="checkbox" name="visa" checked={checklist.visa} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Visa</label>
-              {fileInputs.visa}
+              <label className='answerLineCheckBox'><input type="checkbox" name="visa" checked={checklist.visa} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Visa*</label>
+              {checklist.visa && <input type="file" name={name} className='fileInput' onChange={(e)=>{handleFileChange(e, "visa")}}/>}
               <div>
               {formErrors.visa && <div className="error-message">{formErrors.visa}</div>}
             </div>
               <br />
-              <label className='answerLineCheckBox'><input type="checkbox" name="driversLicence" checked={checklist.driversLicence} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Drivers Licence</label>
-              {fileInputs.driversLicence}
+              <label className='answerLineCheckBox'><input type="checkbox" name="driversLicence" checked={checklist.driversLicence} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Drivers Licence (Please provide if available)</label>
+              {checklist.driversLicence && <input type="file" name={name} className='fileInput' onChange={(e)=>{handleFileChange(e, "driversLicence")}}/>}
               <div>
-              {formErrors.driversLicence && <div className="error-message">{formErrors.driversLicence}</div>}
             </div>
               <br />
-              <label className='answerLineCheckBox'><input type="checkbox" name="policeCheckCertificate" checked={checklist.policeCheckCertificate} onChange={handleCheckboxChange} className='checkbox'/>A copy of your National Police Check Certificate</label>
-              {fileInputs.policeCheckCertificate}
+              <label className='answerLineCheckBox'><input type="checkbox" name="policeCheckCertificate" checked={checklist.policeCheckCertificate} onChange={handleCheckboxChange} className='checkbox'/>A copy of your National Police Check Certificate (Please provide if available)</label>
+              {checklist.policeCheckCertificate && <input type="file" name={name} className='fileInput' onChange={(e)=>{handleFileChange(e, "policeCheckCertificate")}}/>}
               <div>
-              {formErrors.policeCheckCertificate && <div className="error-message">{formErrors.policeCheckCertificate}</div>}
             </div>
               <br />
               <label className='answerLineCheckBox'><input type="checkbox" name="workingWithChildrenCertificate" checked={checklist.workingWithChildrenCertificate} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Working with Children Certificate (if requested)</label><br />
-              {fileInputs.workingWithChildrenCertificate}
+              {checklist.workingWithChildrenCertificate && <input type="file" name={name} className='fileInput' onChange={(e)=>{handleFileChange(e, "workingWithChildrenCertificate")}}/>}
               <div>
-              {formErrors.workingWithChildrenCertificate && <div className="error-message">{formErrors.workingWithChildrenCertificate}</div>}
+
             </div>
               <br />
             </div>
@@ -812,16 +737,7 @@ function PersonalInfoForm() {
         className={formErrors.fullName ? 'inputLine error' : 'inputLine'}
       />
       <label className='answerText'>declare that the information provided is true and current.</label><br />
-      <br />
-      <label className='answerText'>Signed</label>
-      <input 
-        type="text" 
-        name="signature" 
-        placeholder="Your signature" 
-        value={personalInfo.signature}
-        onChange={handleInputChange}
-        className={formErrors.signature ? 'inputLine error' : 'inputLine'}
-      />
+      
       <br /><br />
       <div className="subHeading highlighted">
         I also understand that when vacating/leaving my position I am required to provide a minimum of 14 days’ notice in writing and failure to do so will forfeit payment of my last invoice.
@@ -834,91 +750,22 @@ function PersonalInfoForm() {
     </div>
 <br /><br />
 
-    <div className="boxContent">
-      <div className="heading"><h3>Banking Details</h3></div><br />
-      <div className="lineContainer">
-        <div className="QuestionLine">Bank name:</div>
-        <div>
-        <div className="answerLine">
-          <input 
-            type="text" 
-            name="bankName" 
-            value={bankingDetails.bankName} 
-            onChange={handleBankInputChange} 
-            className='inputLine'
-          />
-        </div>
-        <div>
-              {formErrors.bankName && <div className="error-message">{formErrors.bankName}</div>}
-          </div>
-            </div>
-      </div>
-      <div className="lineContainer">
-        <div className="QuestionLine">Account name:</div>
-        <div>
-        <div className="answerLine">
-          <input 
-            type="text" 
-            name="accountName" 
-            value={bankingDetails.accountName} 
-            onChange={handleBankInputChange} 
-            className='inputLine'
-          />
-        </div>
-        <div>
-              {formErrors.accountName && <div className="error-message">{formErrors.accountName}</div>}
-          </div>
-          </div>
-      </div>
-      <div className="lineContainer">
-        <div className="QuestionLine">BSB number:</div>
-        <div>
-        <div className="answerLine">
-          <input 
-            type="text" 
-            name="bsbNumber" 
-            value={bankingDetails.bsbNumber} 
-            onChange={handleBankInputChange} 
-            className='inputLine'
-          />
-        </div>
-        <div>
-              {formErrors.bsbNumber && <div className="error-message">{formErrors.bsbNumber}</div>}
-          </div>
-          </div>
-      </div>
-      <div className="lineContainer">
-        <div className="QuestionLine">Account number:</div>
-        <div>
-        <div className="answerLine">
-          <input 
-            type="text" 
-            name="accountNumber" 
-            value={bankingDetails.accountNumber} 
-            onChange={handleBankInputChange} 
-            className='inputLine'
-          />
-        </div>
-        <div>
-              {formErrors.accountNumber && <div className="error-message">{formErrors.accountNumber}</div>}
-          </div>
-          </div>
-      </div>
-    </div>
-<br /><br />
+ 
 
-      
+{/*       
       <div className="boxContent">
       <div className="lineContainer">
         <div className="QuestionLine">How many hours are you permitted to work each week?</div>
         <div>
         <div className="answerLine">
           <input 
-            type="text" 
+            type="number" 
             name="permittedHours" 
             value={availability.permittedHours} 
             onChange={handleAvailabilityInputChange} 
             className='inputLine'
+            placeholder='Enter number of hours...'
+
           />
         </div>
         <div>
@@ -931,11 +778,13 @@ function PersonalInfoForm() {
         <div>
         <div className="answerLine">
           <input 
-            type="text" 
+            type="number" 
             name="availableHours" 
             value={availability.availableHours} 
             onChange={handleAvailabilityInputChange} 
             className='inputLine'
+            placeholder='Enter number of hours...'
+
           />
         </div>
         <div>
@@ -1072,7 +921,8 @@ function PersonalInfoForm() {
           </div>
           </div>
       </div>
-    </div>
+    </div> */}
+
     <button  type='submit' className="nextButton" disabled={isSubmitting}>Submit</button>
     {isSubmitting && <Modal heading="Loading" subHeading="Please wait while your form is being submitted" buttonPresent="false" />}
     {submittedSuccessfully && <Modal heading="Success" subHeading="Your Form has been submitted successfully" buttonPresent="true" close={setsubmittedSuccessfully} refresh={()=>{ window.location.reload()}}/>}

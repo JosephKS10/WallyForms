@@ -33,7 +33,7 @@ function Form2() {
     date: currentDate,
     address: '',
     authorisedOfficerSignature: '',
-    authorisedOfficerName: '',
+    authorisedOfficerName: 'Wally Bayat',
     contractorSignature: '',
     contractorName: '',
     commencementDate: '',
@@ -841,10 +841,10 @@ legislation, the National Employment Standards, awards and other industrial inst
   <p className='center'><b>EXECUTED AS AN INDEPENDENT CONTRACTOR AGREEMENT</b></p><br />
   <p><b>EXECUTED</b> for and on behalf of <b>THE PRINCIPAL</b> by its duly Authorized Officer</p><br />
   <div className="signature">
-    <p className='small'>Signature of Authorized Officer</p>
+    <p className='small'>Signature of the Principal</p>
     <Canvas onExport={(data) => handleExportedImage(data, 'authorisedOfficer')}/><br />
     <div className="lineContainer">
-          <div className="QuestionLine small">Name of Authorized Officer</div>
+          <div className="QuestionLine small">Name of the Principal</div>
           <div>
           <div className="answerLine">
             <input
@@ -853,6 +853,7 @@ legislation, the National Employment Standards, awards and other industrial inst
               value={form2Data.authorisedOfficerName}
               onChange={handleInputChange}
               className='inputLine'
+              disabled
             />
           </div>
           <div>

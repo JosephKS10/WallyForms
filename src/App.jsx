@@ -5,13 +5,14 @@ import PersonalInfoForm from './components/PersonalInfoForm';
 import Form2 from './components/Form2';
 import Form3 from './components/Form3';
 import Form4 from './components/Form4';
+import Stage1 from './Pages/Stage1';
 
 import './App.css'
 
 function App() {
 
   useEffect(() => {
-    window.scrollTo(0, document.body.scrollHeight);
+    window.scrollTo(0, 0);
   }, []); 
 
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/Form2" element={<Form2 />} />
           <Route path="/Form3" element={<Form3 />} />
           <Route path="/Form4" element={<Form4 />} />
+          <Route path="/U3RhZ2UxRm9ybQ==" element={<Stage1 />} />
         </Routes>
       </div>
     </Router>

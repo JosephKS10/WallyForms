@@ -1,0 +1,22 @@
+.noExtraField{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2vh;
+}
+.noExtraQuestion{
+    width: 30vw;
+    text-align: center;
+}
+
+.timeInput{
+    width: 22vw;
+    height: 3vh;
+    padding: 1vw;
+    background-color: #D9D9D9;
+    border: none;
+    color: #404040;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+}
