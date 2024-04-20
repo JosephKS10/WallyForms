@@ -1,0 +1,126 @@
+@media print  {
+.block{
+    display: none;
+}
+.formHeading{
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    text-align: center;
+    padding-top: 1vh;
+    border-bottom: 3vh solid #e9edf6;
+    margin-bottom: 1vh;
+}
+
+
+.text1{
+    display: block;
+    color: #000;
+    font-weight: 700;
+    font-size: 30px;    
+    font-family: "Hind", sans-serif;
+    padding-bottom: 1vh;
+    letter-spacing: 1px;
+}
+
+.lineContainer{
+    width: 100vw;
+    border-bottom: 1px solid #ccc;
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1vh;
+}
+.QuestionLine{
+    width: 50vw;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+}
+.answerLine{
+    width: 50vw;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+}
+.inputLine{
+    font-family: "Hind", sans-serif;
+    font-weight: 200;
+    font-size: 20px;
+}
+.text{
+    display: block;
+    color: #000;
+    font-weight: 700;
+    font-size: 20px;    
+    font-family: "Hind", sans-serif;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+.area{
+    border-bottom: 1px solid #ccc;
+}
+.notesTextarea{
+    border: none;
+    font-size: large;
+    background-color: #ccc;
+    font-weight: 400;
+    font-size: 20px;
+    font-family: "Hind", sans-serif;
+}
+.sectionHeader{
+    font-weight: 400;
+    font-size: 20px;
+    font-family: "Hind", sans-serif;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 2vh;
+}
+
+}
+
+@media screen and (max-width: 768px) {
+   .text{
+    display: none;
+   }
+   .text1{
+    display: none;
+   }
+   .center{
+    margin-left: auto;
+    margin-right: auto;
+   }
+   /* Hide default file input button */
+   .fileInput {
+    display: none;
+}
+
+/* Style the custom file input button */
+.customFileInput {
+    background-color: #67C4EC;
+    color: white;
+    width: 80vw;
+
+    height: 5vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px; /* Adjust border-radius using viewport units */
+    cursor: pointer;
+    font-size: 4vw;
+    font-family: "Hind", sans-serif;
+    font-weight: 400;
+}
+
+/* Style hover effect for custom file input button */
+.customFileInput:hover {
+    background-color: #564bc9;
+}
+
+ 
+}

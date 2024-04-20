@@ -1,0 +1,146 @@
+@media print  {
+    .error-message {
+        display: none;
+    }
+    .bold{
+        color: #000;
+    }
+    .boxHeading{
+        font-family: "Hind", sans-serif;
+        font-weight: 700;
+        font-size: 30px;
+        color: #22215B;
+    }
+    .imageGrid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: start;
+        gap: 10px;
+        padding-bottom: 2vh;
+        padding-top: 2vh;
+
+    }
+    
+    .imageBox {
+        width: 70px;
+        height: 70px;
+        overflow: hidden;
+    
+    }
+    .previewImage {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .notesTextarea {
+        margin-top: 10px;
+        width: 90%;
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        resize: vertical;
+        font: inherit;
+    }
+    .down{
+        border-bottom: 1px solid #ccc;
+
+    }
+    .area{
+        border-bottom: 1px solid #ccc;
+    }
+    .mediaImageBox {
+        float: left;
+        width: calc(33.33% - 20px); /* Three images per row with some spacing */
+        margin-right: 20px; /* Adjust spacing between images as needed */
+        margin-bottom: 20px; /* Adjust spacing between rows as needed */
+    }
+
+    .mediaImageBox:nth-child(3n+3) {
+        margin-right: 0; /* Remove right margin for the last image in each row */
+    }
+
+    .mediaImageBox img {
+        width: 100%; /* Make sure images fill the container */
+        height: auto; /* Maintain aspect ratio */
+        border-radius: 4px;
+    }
+   
+}
+
+@media screen and (max-width: 768px) {
+.sectionHeader{
+    margin-bottom: 1rem;
+    color: #22215B;
+    font-family: "Hind", sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+}
+
+.imageGrid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    gap: 10px;
+    padding-bottom: 2vh;
+    padding-top: 2vh;
+}
+
+.imageBox {
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+
+}
+.previewImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.buttonContainer {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.addNotesButton {
+    background-color: white;
+    color: black;
+    font-family: "Hind", sans-serif;
+    font-weight: 400;
+    border: 1px solid black;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.notesTextarea {
+    margin-top: 10px;
+    width: 95%;
+    padding: 8px;
+    border: 0.1px solid #ced4da;
+    border-radius: 4px;
+    resize: vertical;
+    font: inherit;
+    color: black;
+    font-family: "Hind", sans-serif;
+    font-weight: 400;
+}
+
+.mediaSummary {
+    margin-top: 30px;
+}
+
+.mediaImageBox {
+    width: calc(50% - 5px); /* Adjust as needed */
+    margin-bottom: 10px;
+}
+
+.mediaPreviewImage {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+}

@@ -6,6 +6,8 @@ import Form2 from './components/Form2';
 import Form3 from './components/Form3';
 import Form4 from './components/Form4';
 import Stage1 from './Pages/Stage1';
+import CleanerAuditScreen from './Pages/CleanerAudit';
+import RectificationForm from './Pages/RectificationForm';
 
 import './App.css'
 
@@ -26,6 +28,9 @@ function App() {
           <Route path="/Form3" element={<Form3 />} />
           <Route path="/Form4" element={<Form4 />} />
           <Route path="/U3RhZ2UxRm9ybQ==" element={<Stage1 />} />
+          <Route path="/TWVkaWFVcGxvYWRMaW5r" element={<CleanerAuditScreen />} />
+          <Route path="/RectificationForm" element={<RectificationForm />} />
+
         </Routes>
       </div>
     </Router>

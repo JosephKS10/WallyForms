@@ -1,13 +1,19 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import "./Form2.css"
 import Canvas from './SignatureDrawComponent';
 import { useNavigate } from 'react-router-dom'; 
 import companyLogo from '../assets/images/logo.svg'
+import sign from "/sign.svg"
 import Modal from './Modal';
 import Header from './Header';
 
+
 function Form2() {
   const navigate = useNavigate(); 
+  const pdfRef = useRef();
+
+  
+  
 
   const isMobile = () => {
     return /Mobi|Android/i.test(navigator.userAgent);
@@ -32,7 +38,6 @@ function Form2() {
     ABN: '',
     date: currentDate,
     address: '',
-    authorisedOfficerSignature: '',
     authorisedOfficerName: 'Wally Bayat',
     contractorSignature: '',
     contractorName: '',
@@ -65,9 +70,6 @@ function Form2() {
       errors.address = 'Address is required';
     }
 
-    if (!form2Data.authorisedOfficerSignature.trim()) {
-      errors.authorisedOfficerSignature = 'Authorised officer signature is required';
-    }
 
     if (!form2Data.authorisedOfficerName.trim()) {
       errors.authorisedOfficerName = 'Authorised officer name is required';
@@ -89,10 +91,12 @@ function Form2() {
     return Object.keys(errors).length === 0;
   };
 
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbyX6RKiVPJ43cuAF7xNU0n6DML3QXESZEthhjRiXCH4m9xKbEQrcKnWaKzAfSv7S23h/exec"
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbyzaUu3sIEIUJNdl7IibOVhQCvgq5GlEG1JQktV4hXu8K5cy4FlaCr8w2aMqdawDrVc/exec"
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedSuccessfully, setSubmittedSuccessfully] = useState(false);
+  const [generatePDF, setGeneratePDF] = useState(false);
+  const [submitBtn, setSubmitBtn] = useState(true);
 
 
   const handleSubmitForm2 = (e) => {
@@ -125,17 +129,17 @@ function Form2() {
         console.error('Error:', error);
       });
     } else {
-      console.log('Form 2 has errors');
+      
+      const firstErrorKey = Object.keys(form2Errors)[0];
+      const firstErrorElement = document.querySelector(`[name="${firstErrorKey}"]`);
+      if (firstErrorElement) {
+        firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   };
   
   const handleExportedImage = (data, canvasType) => {
-    if (canvasType === 'authorisedOfficer') {
-      setForm2Data(prevState => ({
-        ...prevState,
-        authorisedOfficerSignature: data
-      }));
-    } else if (canvasType === 'contractor') {
+    if (canvasType === 'contractor') {
       setForm2Data(prevState => ({
         ...prevState,
         contractorSignature: data
@@ -143,11 +147,73 @@ function Form2() {
     }
   };
 
+  const [fileInputsSubmission, setFileInputsSubmission] = useState(false)
+
+  const [fileInputs, setFileInputs] = useState({
+    contract: "null",
+  });
+
+  const handleFileChange = (event, name) => {
+    const file = event.target.files[0];
+    
+    // Read the file data
+    const reader = new FileReader();
+    reader.onload = () => {
+        // Encode the file data in base64
+        const base64Data = reader.result.split(',')[1]; // Extracting base64 data from Data URL
+        setFileInputs({ ...fileInputs, [name]: base64Data });
+    };
+    reader.readAsDataURL(file);
+};
+
+const validateFile2 = () => {
+  const errors = {};
+
+  if (fileInputs.contract.trim() === "null") {
+    errors.contract = 'Contract PDF is required';
+  }
+
+  setForm2Errors(errors);
+  return Object.keys(errors).length === 0;
+};
+
+  console.log(fileInputs)
+  const handleSubmitContractFile = (e) => {
+    e.preventDefault();
+    if(validateFile2()){
+      setIsSubmitting(true); 
+      setFileInputsSubmission(true)
+      console.log("Uploading Files")
+      const scriptUrl2 = "https://script.google.com/macros/s/AKfycbwj9QDRhAmRfI8a024DXYkATA1hFFztp8C39oyUpsU37rQsz_ELHyZkpoDKPBEQ_qY2/exec"
+      const formData = new FormData();
+  
+  
+      formData.append("fullName", form2Data.fullName);
+      formData.append("contract", fileInputs.contract);
+  
+  
+      fetch(scriptUrl2, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => {
+          setIsSubmitting(false); 
+         setSubmittedSuccessfully(true);
+         console.log(response)
+        })
+        .catch((error) => {
+          // Handle errors
+          setIsSubmitting(false); 
+          console.error("Error during file upload:", error);
+        });
+    }
+  }
+
   return (
     <React.Fragment>
       <Header heading="Independent Contract Agreement"/>
       <form onSubmit={handleSubmitForm2}>
-      <div className="boxContent">
+      <div className="boxContent" ref={pdfRef}>
       <div className="subHeading"><h3>Wally Cleaning Company <br />(ACN 148 856 580)</h3></div>
       <div className="subHeading"><h3>and</h3></div>
       <div className="lineContainer">
@@ -286,12 +352,14 @@ function Form2() {
                 <div className="partyDetailQuestion">Address:</div>
                 <div>
                 <div className="partyDetailAnswer">
-                  <input
+                  <textarea
                     type="text"
                     name="address"
                     value={form2Data.address}
                     onChange={handleInputChange}
                     className='partyDetailInputLine'
+                    rows={5}
+                    cols={50}
                   />
                 </div>
                 <div>
@@ -842,7 +910,7 @@ legislation, the National Employment Standards, awards and other industrial inst
   <p><b>EXECUTED</b> for and on behalf of <b>THE PRINCIPAL</b> by its duly Authorized Officer</p><br />
   <div className="signature">
     <p className='small'>Signature of the Principal</p>
-    <Canvas onExport={(data) => handleExportedImage(data, 'authorisedOfficer')}/><br />
+    <img className='signatureContainer' src={sign}></img><br /><br />
     <div className="lineContainer">
           <div className="QuestionLine small">Name of the Principal</div>
           <div>
@@ -864,6 +932,9 @@ legislation, the National Employment Standards, awards and other industrial inst
 
 
   </div>
+  <div className="subHeading highlighted">
+        I also understand that when vacating/leaving my position I am required to provide a minimum of 14 days’ notice in writing and failure to do so will forfeit payment of my last invoice.
+      </div><br />
   <p><b>EXECUTED</b> by <b>THE CONTRACTOR</b> in the presence of</p><br />
   <div className="signature">
     <p className='small'>Signature of Contractor</p>
@@ -941,10 +1012,23 @@ legislation, the National Employment Standards, awards and other industrial inst
 
     
       </div>
-      <button  type='submit' className="nextButton" disabled={isSubmitting}>Submit</button>
+      <div style={{display:"flex"}}>
+     { generatePDF && <button  type='button' className="nextButton" disabled={isSubmitting} onClick={()=>{window.print()}} style={{width:"70vw"}}>Download PDF</button>}
+      {submitBtn && <button  type='submit' className="nextButton" disabled={isSubmitting}>Submit</button>}
+      </div>
     {isSubmitting && <Modal heading="Loading" subHeading="Please wait while your form is being submitted" buttonPresent="false" />}
-    {submittedSuccessfully && <Modal heading="Success" subHeading="Your Form has been submitted successfully" buttonPresent="true" close={setSubmittedSuccessfully} refresh={()=>{ window.location.reload()}}/>}
+    {submittedSuccessfully && <Modal heading="Success" subHeading="Your form details have been submitted successfully. However, one final step remains. Please generate the Contract PDF and submit it to complete the process." subHeading1="Thank you for your cooperation." buttonPresent="true" close={setSubmittedSuccessfully} pdfbutton={setGeneratePDF} refresh={()=>{}} submitDisable={setSubmitBtn}/>}
+      </form><br /><br /><br />
+      {generatePDF && (<div className='boxContent block'>
+      <form onSubmit={handleSubmitContractFile}>
+      <label htmlFor="contractPDF" className='QuestionLine block'>Upload Contract PDF</label>
+      <input type="file" name="contract" id="contract" className='answerline top block' onChange={(e)=>{handleFileChange(e, "contract")}}/>
+      {form2Errors.contract && <div className="error-message">{form2Errors.contract}</div>}
+      <button  type='submit' className='fileUploadBtn block'>Final Submission</button>
       </form>
+      {isSubmitting && fileInputsSubmission && <Modal heading="Loading" subHeading="Please wait while your form is being submitted" buttonPresent="false" />}
+      {submittedSuccessfully && fileInputsSubmission && <Modal heading="Success" subHeading="Your form details have been submitted successfully finally." subHeading1="Have a good day." buttonPresent="true" close={setSubmittedSuccessfully} pdfbutton={()=>{}} refresh={()=>{window.location.reload()}} submitDisable={setSubmitBtn}/>}
+      </div>)}
     </React.Fragment>
   )
 }

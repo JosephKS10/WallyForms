@@ -41,7 +41,8 @@
     display: flex;
     justify-content: space-between;
     align-items: end;
-
+    position: relative;
+    top: -2vh;
   }
   .leftDesign{
     height: 34vh;
@@ -69,7 +70,6 @@
     position: relative;
     top: -8vh;
   }
-
 
   .titleContainer{
     flex-direction: column;
@@ -114,8 +114,6 @@
     justify-content: space-between;
     background-color: transparent;
     align-items: center;
-    position: relative;
-    top: -5vh;
 
  }
 .btn {
@@ -137,8 +135,7 @@ box-shadow: 0px 10px 6px -9px rgba(0,0,0,0.75);
   .bottomWavesContainer{
     display: flex;
     align-items: end;
-    height: 13vh;
-
+    height: 42vh;
     mix-blend-mode: normal;
     background-color: transparent;
   }

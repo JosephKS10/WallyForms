@@ -9,7 +9,6 @@ import bubble3 from '../assets/elements/form-assets/bubbles3.svg'
 import bubble4 from '../assets/elements/form-assets/bubbles4.svg'
 import bubble5 from '../assets/elements/form-assets/bubbles5.svg'
 import companyLogo from '../assets/images/logo.svg'
-import line from '../assets/elements/form-assets/line.svg'
 
 const HomeScreen = () => {
   const navigate = useNavigate(); 
@@ -72,17 +71,17 @@ const HomeScreen = () => {
             <p className='headingFirst'>Welcome to</p>
             <p className='headingSecond'>Wally Cleaning Company</p>
         </div>
-        <div className="contentContainer">
+        {/* <div className="contentContainer">
           <p className='text'>Providing the highest level of service is always a matter of effectively and efficiently managing your people and this is one area we pride ourselves on. 
             <br /><br />
             We are, after all, in the people business.</p>
-        </div>
+        </div> */}
       </div> 
       <div className="buttonContainer">
         <button className="btn" onClick={handleBeforeTrainingClick}>
-          Before Training 
-        </button><br />
-        <button className="btn" onClick={handleAfterTrainingClick}>After Training </button>
+          Get Started 
+        </button>
+        {/* <button className="btn" onClick={handleAfterTrainingClick}>After Training </button> */}
       </div>
 
       <div className="bottomWavesContainer">

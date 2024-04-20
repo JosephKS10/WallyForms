@@ -227,7 +227,8 @@ function Stage1() {
     }
     return true; // Return true if at least one day is selected
   };
-  console.log(formErrors)
+
+  
   const validateForm = () => {
     const errors = {};
   
@@ -293,7 +294,7 @@ function Stage1() {
     return Object.keys(errors).length === 0;
   };
   
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbxnJiqcynLV4c3qm5BSGvU_Tm-06BomG60YiYoANIblhAdMLx7X1bmpVbwusdH5QKrk/exec"
+  const scriptUrl = "https://script.google.com/macros/s/AKfycbyFB8AdnsJxvAMShLnW5LS4-uygf3tLtIQGzrgNU6uWQyErW_VAPErIftOI7u26gcqJ/exec"
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedSuccessfully, setsubmittedSuccessfully] = useState(false);
@@ -338,8 +339,14 @@ function Stage1() {
         // Handle error cases
       });
     } else {
-      console.log('Form has errors');
+      
+      const firstErrorKey = Object.keys(formErrors)[0];
+      const firstErrorElement = document.querySelector(`[name="${firstErrorKey}"]`);
+      if (firstErrorElement) {
+        firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
+    
   };
 
   useEffect(() => {

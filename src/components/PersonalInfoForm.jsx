@@ -4,7 +4,7 @@ import Canvas from './SignatureDrawComponent';
 import { useNavigate } from 'react-router-dom'; 
 import Header from './Header';
 import Modal from './Modal';
-import axios from 'axios'
+
 
 function PersonalInfoForm() {
   const navigate = useNavigate(); 
@@ -44,6 +44,10 @@ function PersonalInfoForm() {
     abnName: '',
     abn: '',
     taxFileNumber: '',
+    bankName: '',
+    accountName: '',
+    bsbNumber: '',
+    accountNumber: '',
     fullName: '',
     signature: '',
   });
@@ -162,11 +166,11 @@ function PersonalInfoForm() {
       errors.citizenChecked = 'Citizenship status is required';
     }
   
-    if (!personalInfo.residencyChecked) {
+    if (personalInfo.citizenChecked==="No" && !personalInfo.residencyChecked) {
       errors.residencyChecked = 'Residency status is required';
     }
   
-    if (!personalInfo.visaStatus) {
+    if (personalInfo.citizenChecked==="No" && !personalInfo.visaStatus) {
       errors.visaStatus = 'Visa status is required';
     }
     if (!personalInfo.abnName) {
@@ -177,6 +181,18 @@ function PersonalInfoForm() {
     }
     if (!personalInfo.taxFileNumber) {
       errors.taxFileNumber = 'Tax file number is required';
+    }
+    if (!personalInfo.bankName) {
+      errors.bankName = 'Bank Name is required';
+    }
+    if (!personalInfo.accountName) {
+      errors.accountName = 'Account Name is required';
+    }
+    if (!personalInfo.bsbNumber) {
+      errors.bsbNumber = 'BSB Number is required';
+    }
+    if (!personalInfo.accountNumber) {
+      errors.accountNumber = 'Account Number is required';
     }
 
     // Validate document uploads
@@ -199,7 +215,7 @@ function PersonalInfoForm() {
     return Object.keys(errors).length === 0;
   };
   
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbzxgK9ziqeEU9ZpUwLVq3X3nE6e4fI1tvpzNDrz1piciMy9QKTwnB4nKAzvKmHStnZA/exec"
+  const scriptUrl = "https://script.google.com/macros/s/AKfycby0A6VYSp3z0pWGdBpBw6k-b-E-kjfF1h1wHB1PhoYP8vC_ExNKWAzfUx0ENqyP3EzH/exec"
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedSuccessfully, setsubmittedSuccessfully] = useState(false);
@@ -242,10 +258,15 @@ function PersonalInfoForm() {
         // Handle error cases
       });
     } else {
-      console.log('Form has errors');
+      
+      const firstErrorKey = Object.keys(formErrors)[0];
+      const firstErrorElement = document.querySelector(`[name="${firstErrorKey}"]`);
+      if (firstErrorElement) {
+        firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   };
-  console.log(formErrors)
+
   function handleFileUpload(e) {
     e.preventDefault();
     console.log("Uploading Files")
@@ -275,6 +296,14 @@ function PersonalInfoForm() {
       });
   }
   
+  const handleExportedImage = (data, canvasType) => {
+    if (canvasType === 'signature') {
+      setPersonalInfo(prevState => ({
+        ...prevState,
+        signature: data
+      }));
+    }
+  };
 
   return (
     <React.Fragment>
@@ -565,7 +594,7 @@ function PersonalInfoForm() {
         </div>
         </div>
 
-        <div className="lineContainer">
+        {personalInfo.citizenChecked==="No" && (<div className="lineContainer">
           <div className="QuestionLine">If no, do you have Residency Status?</div>
           <div>
           <div className="answerLine">
@@ -576,9 +605,9 @@ function PersonalInfoForm() {
           {formErrors.residencyChecked && <div className="error-message">{formErrors.residencyChecked}</div>}
         </div>
         </div>
-        </div>
+        </div>)}
 
-        <div className="lineContainer">
+        {personalInfo.citizenChecked==="No" && (<div className="lineContainer">
           <div className="QuestionLine"><b>Visa Status</b></div>
           <div>
           <div className="answerLineCheckBox">
@@ -620,7 +649,7 @@ function PersonalInfoForm() {
           {formErrors.visaStatus && <div className="error-message" style={{textAlign:"center"}}>{formErrors.visaStatus}</div>}
         </div>
         </div>
-        </div>
+        </div>)}
 
         <div className="subHeading"><h3>NOTE: YOU MUST PROVIDE A COPY OF YOUR VISA</h3></div>
 
@@ -684,6 +713,87 @@ function PersonalInfoForm() {
             </div>
           </div>
         </div>
+<br />
+        <div className="subHeading"><h3>BANKING DETAILS</h3></div>
+
+        <div className="VisaDetailsContainer">
+          <div className="lineContainer">
+            <div className="QuestionLine"><b>Bank</b> Name</div>
+            <div>
+            <div className="answerLine">
+              <input
+                type="text"
+                name="bankName"
+                value={personalInfo.bankName}
+                onChange={handleInputChange}
+                className='inputLine'
+                placeholder='Enter Bank name...'
+
+              />
+            </div>
+            <div>
+            {formErrors.bankName && <div className="error-message">{formErrors.bankName}</div>}
+            </div>
+            </div>
+          </div>
+          <div className="lineContainer">
+            <div className="QuestionLine"><b>Account Name</b></div>
+            <div>
+            <div className="answerLine">
+              <input
+                type="text"
+                name="accountName"
+                value={personalInfo.accountName}
+                onChange={handleInputChange}
+                className='inputLine'
+                placeholder='Enter Account Name...'
+
+              />
+            </div>
+            <div>
+            {formErrors.accountName && <div className="error-message">{formErrors.accountName}</div>}
+            </div>
+            </div>
+          </div>
+          <div className="lineContainer">
+            <div className="QuestionLine"><b>BSB Number</b></div>
+            <div>
+            <div className="answerLine">
+              <input
+                type="text"
+                name="bsbNumber"
+                value={personalInfo.bsbNumber}
+                onChange={handleInputChange}
+                className='inputLine'
+                placeholder='Enter BSB number...'
+
+              />
+            </div>
+            <div>
+            {formErrors.bsbNumber && <div className="error-message">{formErrors.bsbNumber}</div>}
+            </div>
+            </div>
+          </div>
+          <div className="lineContainer">
+            <div className="QuestionLine"><b>Account Number</b></div>
+            <div>
+            <div className="answerLine">
+              <input
+                type="text"
+                name="accountNumber"
+                value={personalInfo.accountNumber}
+                onChange={handleInputChange}
+                className='inputLine'
+                placeholder='Enter Account number...'
+
+              />
+            </div>
+            <div>
+            {formErrors.accountNumber && <div className="error-message">{formErrors.accountNumber}</div>}
+            </div>
+            </div>
+          </div>
+        </div>
       </div>
 
 <br /><br />
@@ -698,23 +808,23 @@ function PersonalInfoForm() {
               {formErrors.passport && <div className="error-message">{formErrors.passport}</div>}
             </div><br />
               <label className='answerLineCheckBox'><input type="checkbox" name="visa" checked={checklist.visa} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Visa*</label>
-              {checklist.visa && <input type="file" name={name} className='fileInput' onChange={(e)=>{handleFileChange(e, "visa")}}/>}
+              {checklist.visa && <input type="file" name="visa" className='fileInput' onChange={(e)=>{handleFileChange(e, "visa")}}/>}
               <div>
               {formErrors.visa && <div className="error-message">{formErrors.visa}</div>}
             </div>
               <br />
               <label className='answerLineCheckBox'><input type="checkbox" name="driversLicence" checked={checklist.driversLicence} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Drivers Licence (Please provide if available)</label>
-              {checklist.driversLicence && <input type="file" name={name} className='fileInput' onChange={(e)=>{handleFileChange(e, "driversLicence")}}/>}
+              {checklist.driversLicence && <input type="file" name="driversLicence" className='fileInput' onChange={(e)=>{handleFileChange(e, "driversLicence")}}/>}
               <div>
             </div>
               <br />
               <label className='answerLineCheckBox'><input type="checkbox" name="policeCheckCertificate" checked={checklist.policeCheckCertificate} onChange={handleCheckboxChange} className='checkbox'/>A copy of your National Police Check Certificate (Please provide if available)</label>
-              {checklist.policeCheckCertificate && <input type="file" name={name} className='fileInput' onChange={(e)=>{handleFileChange(e, "policeCheckCertificate")}}/>}
+              {checklist.policeCheckCertificate && <input type="file" name="policeCheckCertificate" className='fileInput' onChange={(e)=>{handleFileChange(e, "policeCheckCertificate")}}/>}
               <div>
             </div>
               <br />
               <label className='answerLineCheckBox'><input type="checkbox" name="workingWithChildrenCertificate" checked={checklist.workingWithChildrenCertificate} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Working with Children Certificate (if requested)</label><br />
-              {checklist.workingWithChildrenCertificate && <input type="file" name={name} className='fileInput' onChange={(e)=>{handleFileChange(e, "workingWithChildrenCertificate")}}/>}
+              {checklist.workingWithChildrenCertificate && <input type="file" name="workingWithChildrenCertificate" className='fileInput' onChange={(e)=>{handleFileChange(e, "workingWithChildrenCertificate")}}/>}
               <div>
 
             </div>
@@ -739,13 +849,11 @@ function PersonalInfoForm() {
       <label className='answerText'>declare that the information provided is true and current.</label><br />
       
       <br /><br />
-      <div className="subHeading highlighted">
-        I also understand that when vacating/leaving my position I am required to provide a minimum of 14 days’ notice in writing and failure to do so will forfeit payment of my last invoice.
-      </div>
+      
       <br />
 
       <div>
-        <Canvas/>
+        <Canvas onExport={(data) => handleExportedImage(data, 'signature')} />
       </div>
     </div>
 <br /><br />
@@ -925,7 +1033,7 @@ function PersonalInfoForm() {
 
     <button  type='submit' className="nextButton" disabled={isSubmitting}>Submit</button>
     {isSubmitting && <Modal heading="Loading" subHeading="Please wait while your form is being submitted" buttonPresent="false" />}
-    {submittedSuccessfully && <Modal heading="Success" subHeading="Your Form has been submitted successfully" buttonPresent="true" close={setsubmittedSuccessfully} refresh={()=>{ window.location.reload()}}/>}
+    {submittedSuccessfully && <Modal heading="Success" subHeading="Your Form has been submitted successfully" buttonPresent="true" close={setsubmittedSuccessfully} refresh={()=>{ window.location.reload()}} pdfbutton={()=>{}} submitDisable={()=>{}}/>}
 
     </form>
 

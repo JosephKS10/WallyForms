@@ -1,3 +1,9 @@
+@media print{
+  .menuButton {
+    display: none;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .leftDesign {
     background-image: url('../assets//elements/form-assets/leftWave.svg');
