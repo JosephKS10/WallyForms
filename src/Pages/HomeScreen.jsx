@@ -18,9 +18,24 @@ const HomeScreen = () => {
     navigate('/PersonalInfo');
   };
 
-  const handleAfterTrainingClick = () => {
+  const handleForm2Click = () => {
     window.scrollTo(0, 0);
-    navigate('/Form3');
+    navigate('/Form2');
+  };
+
+  const handleAuditClick = () => {
+    window.scrollTo(0, 0);
+    navigate('/TWVkaWFVcGxvYWRMaW5r'); // Add actual path for the cleaning audit
+  };
+
+  const handleRectificationClick = () => {
+    window.scrollTo(0, 0);
+    navigate('/RectificationForm');
+  };
+
+  const handleSupervisorCleanerRemovalForm = () => {
+    window.scrollTo(0, 0);
+    navigate('/SupervisorFormCleanerRemoval');
   };
 
   const isMobile = () => {
@@ -71,17 +86,26 @@ const HomeScreen = () => {
             <p className='headingFirst'>Welcome to</p>
             <p className='headingSecond'>Wally Cleaning Company</p>
         </div>
-        {/* <div className="contentContainer">
-          <p className='text'>Providing the highest level of service is always a matter of effectively and efficiently managing your people and this is one area we pride ourselves on. 
-            <br /><br />
-            We are, after all, in the people business.</p>
-        </div> */}
       </div> 
       <div className="buttonContainer">
+        <h4 className='distinct-heading'>Contractor Details and Contract</h4>
         <button className="btn" onClick={handleBeforeTrainingClick}>
-          Get Started 
+        Contractor Detail
         </button>
-        {/* <button className="btn" onClick={handleAfterTrainingClick}>After Training </button> */}
+        <button className="btn" onClick={handleForm2Click}>
+        Independent Contract Agreement
+        </button><br />
+        <h4 className='distinct-heading'>Audit Forms</h4>
+        <button className="btn" onClick={handleAuditClick}>
+        Cleaning Audit
+        </button>
+        <button className="btn" onClick={handleRectificationClick}>
+        Rectification Form
+        </button><br />
+        <h4 className='distinct-heading'>Supervisor Forms</h4>
+        <button className="btn" onClick={handleSupervisorCleanerRemovalForm}>
+        Supervisor Cleaner Removal Form
+        </button>
       </div>
 
       <div className="bottomWavesContainer">

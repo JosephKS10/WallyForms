@@ -1,0 +1,26 @@
+@media print {
+    .dollarSign{
+    display: block;
+    color: #000;
+    font-size: 20px;    
+    font-family: "Hind", sans-serif;
+    position: relative;
+    right: 35vw;
+    }
+}
+
+.inputWrapper {
+    display: flex;
+    align-items: center;
+  }
+  
+  .inputLine {
+    flex-grow: 1; /* This allows the input to take up as much space as possible */
+    padding-right: 15px; /* Add some padding to ensure space between the input and the dollar sign */
+  }
+  
+  .dollarSign {
+    color: #000; /* Set the color of the dollar sign */
+    font-size: 1rem; /* Adjust the font size as needed */
+    margin-left: -15px
+  }  

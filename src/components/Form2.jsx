@@ -6,12 +6,13 @@ import companyLogo from '../assets/images/logo.svg'
 import sign from "/sign.svg"
 import Modal from './Modal';
 import Header from './Header';
+import emailjs from 'emailjs-com';
 
 
 function Form2() {
   const navigate = useNavigate(); 
   const pdfRef = useRef();
-
+  const PUBLIC_KEY = 'KXRncuNTnshAREN68';
   
   
 
@@ -98,6 +99,16 @@ function Form2() {
   const [generatePDF, setGeneratePDF] = useState(false);
   const [submitBtn, setSubmitBtn] = useState(true);
 
+  const formattedMessage = `
+  Site Information:
+  - Full Name: ${form2Data.fullName}
+  - ABN: ${form2Data.ABN}
+  - Date: ${form2Data.date}
+  - Address: ${form2Data.address}
+  - Authorized Officer Name: ${form2Data.authorisedOfficerName}
+  - Contractor Name: ${form2Data.contractorName}
+  - Commencement Date: ${form2Data.commencementDate}
+`;
 
   const handleSubmitForm2 = (e) => {
     e.preventDefault();
@@ -119,6 +130,15 @@ function Form2() {
       .then(response => {
         setIsSubmitting(false); 
         if (response.ok) {
+          emailjs.send("service_nllln5l", "template_hf524b4", {
+            from_name: "Wally Cleaning",
+            to_name: "Admin",
+            message: formattedMessage, 
+        }, PUBLIC_KEY).then((response) => {
+            console.log("Email sent successfully:", response);
+        }).catch((error) => {
+            console.error("Error sending email:", error);
+        });
           setSubmittedSuccessfully(true);
           console.log('Form submitted successfully');
         } else {
@@ -211,7 +231,7 @@ const validateFile2 = () => {
 
   return (
     <React.Fragment>
-      <Header heading="Independent Contract Agreement"/>
+      <Header heading="Independent Contract Agreement" companyLogoVisibility={true}/>
       <form onSubmit={handleSubmitForm2}>
       <div className="boxContent" ref={pdfRef}>
       <div className="subHeading"><h3>Wally Cleaning Company <br />(ACN 148 856 580)</h3></div>

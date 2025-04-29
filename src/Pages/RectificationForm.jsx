@@ -18,26 +18,35 @@ const MediaSummary = ({ images }) => {
         </div>
     );
 };
-
+    
 function RectificationForm() {
     const [siteInfo, setSiteInfo] = useState({
         siteName: '',
         conductedOn: new Date().toISOString().split('T')[0],
         preparedBy: '',
         location: '',
+        areaRequiredAttention: '',
+        ifRectified: '',
     });
 
     const [beforeImages, setBeforeImages] = useState([]);
     const [afterImages, setAfterImages] = useState([]);
+    const [areaAttentionImages, setAreaAttentionImages] = useState([]);
 
     const [notes, setNotes] = useState({
         entrance: '',
         reception: '',
+        areaRequiredAttention: '',
     });
     const [showNotes, setShowNotes] = useState({
         entrance: false,
         reception: false,
+        areaRequiredAttention: false,
     });
+
+    const [selectedButton, setSelectedButton] = useState(''); 
+    const [selectedButton2, setSelectedButton2] = useState(''); 
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -83,6 +92,9 @@ function RectificationForm() {
                     break;
                 case 'after':
                     setAfterImages(compressedImages);
+                    break;
+                case 'areaAttention':
+                    setAreaAttentionImages(compressedImages);
                     break;
                 default:
                     break;
@@ -157,6 +169,10 @@ function RectificationForm() {
         }
         if(afterImages.length === 0){
             errors.receptionImages = 'Reception images are required';
+        }
+        if(!siteInfo.areaRequiredAttention){
+            errors.areaRequiredAttention = "This is required";
+
         }
         if(fileInputs.audit === "null"){
             errors.audit = 'Audit file is required';
@@ -266,13 +282,14 @@ function RectificationForm() {
     };
 
     console.log(fileInputs.audit)
+    console.log(siteInfo)
     return (
         <React.Fragment>
 
-            <Header heading="Rectification Form" subHeading="" visibility="collapse"/>
+            <Header heading="Rectification Form" subHeading="" visibility="visible" companyLogoVisibility={false}/>
             <br />
             <form onSubmit={handleSubmit}>
-                <div className="boxContent">
+                <div className="boxContent pdfcontent">
                     <div className="lineContainer">
                         <div className="QuestionLine">Site Conducted</div>
                         <div>
@@ -343,7 +360,7 @@ function RectificationForm() {
                 </div>
                 <br />
                 <div className="boxContent">
-                    <div className="sectionHeader">BEFORE PHOTOS - Taken prior to work commencing</div><br />
+                    <div className="sectionHeader"><b>BEFORE PHOTOS</b> - Taken prior to work commencing</div><br />
                 <div className="block">
                 <div className="lineContainer">
                         <div className='center'>
@@ -375,7 +392,7 @@ function RectificationForm() {
                 </div>
                 <br />
                 <div className="boxContent">
-                    <div className="sectionHeader">AFTER PHOTOS - Taken after work has been completed</div><br />
+                    <div className="sectionHeader"><b>AFTER PHOTOS</b> - Taken after work has been completed</div><br />
                     <div className="block">
                 <div className="lineContainer">
                         <div className='center'>
@@ -406,13 +423,121 @@ function RectificationForm() {
                     </div>
                 </div>
                 <br />
+                <div className="boxContent">
+                    <div className="container">
+      <div className="QuestionLine">Area that requires attention & work completed</div>
+      <div className='text2'>{siteInfo.areaRequiredAttention}</div>
+      <div>
+      <div className='block'>
+      <div className="ButtonContainer" style={{backgroundColor: "#FFF"}}>
+        <button
+         type="button"
+          className={selectedButton === 'Yes' ? 'active' : ''}
+          name="areaRequiredAttention"
+          value="Yes"
+          onClick={()=>{handleInputChange({ target: { name: 'areaRequiredAttention', value: 'Yes' } }); setSelectedButton("Yes")}}
+        >
+          Yes
+        </button>
+        <button
+         type="button"
+          className={selectedButton === 'No' ? 'active' : ''}
+          name="areaRequiredAttention"
+          value="No"
+          onClick={()=>{handleInputChange({ target: { name: 'areaRequiredAttention', value: 'No' } }); setSelectedButton("No"); setAreaAttentionImages([]); setNotes({ ...notes, areaRequiredAttention: '' })}}>
+          No
+        </button>
+      </div>
+      </div>
+      <div>
+        {formErrors.areaRequiredAttention && <div className="error-message">{formErrors.areaRequiredAttention}</div>}
+        </div>
+        </div>
+    </div>
+                    {siteInfo.areaRequiredAttention == "Yes" && 
+                    <>
+                    <div className="block">
+                <div className="lineContainer">
+                        <div className='center'>
+                            <div className="block">
+                            <label htmlFor="fileInputAreaAttention" className="customFileInput">
+                                Add Media
+                            </label>
+                            <input
+                                id="fileInputAreaAttention"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={(e) => handleImageChange(e, 'areaAttention')}
+                                className="fileInput"
+                            />
+                            </div>
+                            <div>
+                                {formErrors.receptionImages && <div className="error-message">{formErrors.images}</div>}
+                            </div>
+                        </div>
+                    </div>
+                     </div>
+                    <div>
+                        {areaAttentionImages.length!==0 && renderImagePreview(areaAttentionImages)}
+                        </div>
+                        <div>
+                    {renderNotesInput('areaRequiredAttention')}
+                    </div>
+                    </>}
+                    <div className="container" style={{marginTop:20}}>
+      <div className="QuestionLine">If rectified</div>
+      <div className='text2'>{siteInfo.ifRectified}</div>
+      <div>
+        <div className='block'>
+      <div className="ButtonContainer" style={{backgroundColor: "#FFF"}}>
+        <button
+         type="button"
+          className={selectedButton2 === 'Yes' ? 'active' : ''}
+          name="ifRectified"
+          value="Yes"
+          onClick={()=>{handleInputChange({ target: { name: 'ifRectified', value: 'Yes' } }); setSelectedButton2("Yes")}}>
+          Yes
+        </button>
+        <button
+         type="button"
+          className={selectedButton2 === 'No' ? 'active' : ''}
+          name="ifRectified"
+          value="No"
+          onClick={()=>{handleInputChange({ target: { name: 'ifRectified', value: 'No' } }); setSelectedButton2("No");}}>
+          No
+        </button>
+      </div>
+      </div>
+      <div>
+        {formErrors.ifRectified && <div className="error-message">{formErrors.ifRectified}</div>}
+        </div>
+        </div>
+    </div>
+                </div>
+                
+                <br />
                 
                 <div className="boxContent">
                     <div className="sectionHeader"><b>Media Summary</b></div><br />
-                    <MediaSummary images={[...beforeImages, ...afterImages,]} />
+                    <MediaSummary images={[...beforeImages, ...afterImages, ...areaAttentionImages]} />
                 </div>
-                <button  type='button' className="nextButton" disabled={isSubmitting} onClick={()=>{window.print();setGeneratePDF(true)}} style={{width:"70vw"}}>Download PDF</button><br /><br /><br /><br />
-                {generatePDF && (<div className='boxContent block'>
+                <button  type='button' className="nextButton" disabled={isSubmitting} onClick={async () => {
+    // Assuming you're using Formik and have access to a `validateForm` or `submitForm` function
+    const isValid = await validateForm();  // Or trigger submitForm for form submission
+    
+    if (isValid) {
+      // If the form is valid, then proceed with print and generating the PDF
+      window.print();
+      setGeneratePDF(true);
+    } else {
+      // Handle form errors if validation fails (optional)
+      console.log("Form validation failed!");
+    }
+  }}
+  style={{width:"70vw"}}
+>Download PDF</button><br /><br /><br /><br />
+                {/* {generatePDF && (<div className='boxContent block'>
 
                  <label htmlFor="contractPDF" className='QuestionLine block'>Upload Rectification Report PDF</label>
                  <input type="file" name="audit" id="contract" className='answerline top block' onChange={(e)=>{handleFileChange(e, "audit")}}/>
@@ -421,7 +546,7 @@ function RectificationForm() {
 
                  {isSubmitting && fileInputsSubmission && <Modal heading="Loading" subHeading="Please wait while your rectification report is being submitted" buttonPresent="false" />}
                  {submittedSuccessfully && fileInputsSubmission && <Modal heading="Success" subHeading="Your rectification report has been submitted successfully finally." subHeading1="Have a good day." buttonPresent="true" close={setSubmittedSuccessfully} pdfbutton={()=>{}} refresh={()=>{window.location.reload()}} submitDisable={setSubmitBtn}/>}
-                    </div>)}
+                    </div>)} */}
             </form>
         </React.Fragment>
     );

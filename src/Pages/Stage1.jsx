@@ -355,7 +355,7 @@ function Stage1() {
 
   return (
     <React.Fragment>
-        <Header heading="AECFM Personal Information Form" subHeading={subHeading} visibility="collapse"/>
+        <Header heading="AECFM Personal Information Form" subHeading={subHeading} visibility="collapse" companyLogoVisibility={true}/>
         <br /><br />
       <form onSubmit={handleSubmit}>
     {submittedSuccessfully || 

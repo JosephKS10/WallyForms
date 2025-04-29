@@ -50,6 +50,13 @@
     top: 0;
     left: 0;
   }
+  .menuSectionHeading {
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 16px;
+    margin-left: 10px;
+  }
   .menuHeader{
     width: 100%;
     display: flex;

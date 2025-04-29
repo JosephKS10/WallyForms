@@ -7,22 +7,6 @@ import Modal from './Modal';
 
 
 function PersonalInfoForm() {
-  const navigate = useNavigate(); 
-
-  const isMobile = () => {
-    return /Mobi|Android/i.test(navigator.userAgent);
-  };
-
-  if (!isMobile()){
-    return(
-      <div className="error-message">
-      <h1>Error: Access from desktop not allowed</h1>
-      <p>Please access this website from a mobile device.</p>
-    </div>
-    )
-  }
-
- 
   // personalInfo state
   const [personalInfo, setPersonalInfo] = useState({
     title: '',
@@ -50,6 +34,8 @@ function PersonalInfoForm() {
     accountNumber: '',
     fullName: '',
     signature: '',
+    isSiteAllocated: '',
+    siteName: '',
   });
 
 
@@ -78,7 +64,8 @@ function PersonalInfoForm() {
 
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
-    setChecklist({ ...checklist, [name]: checked });
+    console.log(name, checked)
+    setChecklist((prevChecklist) => ({ ...prevChecklist, [name]: checked }));
   };
 
   const handleFileChange = (event, name) => {
@@ -104,6 +91,7 @@ function PersonalInfoForm() {
 
     const [selectedButton, setSelectedButton] = useState(''); 
 
+  const [siteSelectedButton, setSiteSelectedButton] = useState('');
 
   const [formErrors, setFormErrors] = useState({});
 
@@ -204,13 +192,18 @@ function PersonalInfoForm() {
     errors.visa = 'Visa copy is required';
   }
 
-
-  // contract agreement validation
   if (!personalInfo.fullName.trim()) {
     errors.fullName = 'Full name is required';
   }
 
+  if (!personalInfo.isSiteAllocated) {
+    errors.fullName = 'This is required';
+  }
 
+  if (!personalInfo.siteName) {
+    errors.fullName = 'Site name is required';
+  }
+  
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -305,9 +298,21 @@ function PersonalInfoForm() {
     }
   };
 
+  const isMobile = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
+
+  if (!isMobile()){
+    return(
+      <div className="error-message">
+      <h1>Error: Access from desktop not allowed</h1>
+      <p>Please access this website from a mobile device.</p>
+    </div>
+    )
+  }
   return (
     <React.Fragment>
-        <Header heading="Contractor Detail Form" subHeading="Please fill in your details below"/>
+        <Header heading="Contractor Detail Form" subHeading="Please fill in your details below" companyLogoVisibility={true}/>
       <form onSubmit={handleSubmit}>
 
       <div className="boxContent">
@@ -798,40 +803,116 @@ function PersonalInfoForm() {
 
 <br /><br />
 
-          <div className="boxContent">
-          <div className="heading"><h3>Pre Start Check List</h3></div>
-          <div className="subHeading"><h4>We require the following information to be provided prior to commencement:</h4></div>
-            <div className='answerCheckbox' >
-              <label className='answerLineCheckBox'><input type="checkbox" name="passport" checked={checklist.passport} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Passport*</label>
-              {checklist.passport && <input type="file" name="passport" className='fileInput' onChange={(e)=>{handleFileChange(e, "passport")}}/>}
-              <div>
-              {formErrors.passport && <div className="error-message">{formErrors.passport}</div>}
-            </div><br />
-              <label className='answerLineCheckBox'><input type="checkbox" name="visa" checked={checklist.visa} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Visa*</label>
-              {checklist.visa && <input type="file" name="visa" className='fileInput' onChange={(e)=>{handleFileChange(e, "visa")}}/>}
-              <div>
-              {formErrors.visa && <div className="error-message">{formErrors.visa}</div>}
-            </div>
-              <br />
-              <label className='answerLineCheckBox'><input type="checkbox" name="driversLicence" checked={checklist.driversLicence} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Drivers Licence (Please provide if available)</label>
-              {checklist.driversLicence && <input type="file" name="driversLicence" className='fileInput' onChange={(e)=>{handleFileChange(e, "driversLicence")}}/>}
-              <div>
-            </div>
-              <br />
-              <label className='answerLineCheckBox'><input type="checkbox" name="policeCheckCertificate" checked={checklist.policeCheckCertificate} onChange={handleCheckboxChange} className='checkbox'/>A copy of your National Police Check Certificate (Please provide if available)</label>
-              {checklist.policeCheckCertificate && <input type="file" name="policeCheckCertificate" className='fileInput' onChange={(e)=>{handleFileChange(e, "policeCheckCertificate")}}/>}
-              <div>
-            </div>
-              <br />
-              <label className='answerLineCheckBox'><input type="checkbox" name="workingWithChildrenCertificate" checked={checklist.workingWithChildrenCertificate} onChange={handleCheckboxChange} className='checkbox'/>A copy of your Working with Children Certificate (if requested)</label><br />
-              {checklist.workingWithChildrenCertificate && <input type="file" name="workingWithChildrenCertificate" className='fileInput' onChange={(e)=>{handleFileChange(e, "workingWithChildrenCertificate")}}/>}
-              <div>
-
-            </div>
-              <br />
-            </div>
-          </div>
-
+<div className="boxContent">
+      <div className="heading"><h3>Pre Start Check List</h3></div>
+      <div className="subHeading"><h4>We require the following information to be provided prior to commencement:</h4></div>
+      <div className='answerCheckbox'>
+        <label className='answerLineCheckBox'>
+          <input
+            type="checkbox"
+            name="passport"
+            checked={checklist.passport}
+            onChange={handleCheckboxChange}
+            className='checkbox'
+          />
+          A copy of your Passport*
+        </label>
+        {checklist.passport && 
+          <input
+            type="file"
+            name="passport"
+            className='FileInput'
+            onChange={(e) => handleFileChange(e, "passport")}
+          />
+        }
+        <div>
+          {formErrors.passport && <div className="error-message">{formErrors.passport}</div>}
+        </div>
+        <br />
+        <label className='answerLineCheckBox'>
+          <input
+            type="checkbox"
+            name="visa"
+            checked={checklist.visa}
+            onChange={handleCheckboxChange}
+            className='checkbox'
+          />
+          A copy of your Visa*
+        </label>
+        {checklist.visa && (
+          <input
+            type="file"
+            name="visa"
+            className='FileInput'
+            onChange={(e) => handleFileChange(e, "visa")}
+          />
+        )}
+        <div>
+          {formErrors.visa && <div className="error-message">{formErrors.visa}</div>}
+        </div>
+        <br />
+        <label className='answerLineCheckBox'>
+          <input
+            type="checkbox"
+            name="driversLicence"
+            checked={checklist.driversLicence}
+            onChange={handleCheckboxChange}
+            className='checkbox'
+          />
+          A copy of your Drivers Licence (Please provide if available)
+        </label>
+        {checklist.driversLicence && (
+          <input
+            type="file"
+            name="driversLicence"
+            className='FileInput'
+            onChange={(e) => handleFileChange(e, "driversLicence")}
+          />
+        )}
+        <div></div>
+        <br />
+        <label className='answerLineCheckBox'>
+          <input
+            type="checkbox"
+            name="policeCheckCertificate"
+            checked={checklist.policeCheckCertificate}
+            onChange={handleCheckboxChange}
+            className='checkbox'
+          />
+          A copy of your National Police Check Certificate (Please provide if available)
+        </label>
+        {checklist.policeCheckCertificate && (
+          <input
+            type="file"
+            name="policeCheckCertificate"
+            className='FileInput'
+            onChange={(e) => handleFileChange(e, "policeCheckCertificate")}
+          />
+        )}
+        <div></div>
+        <br />
+        <label className='answerLineCheckBox'>
+          <input
+            type="checkbox"
+            name="workingWithChildrenCertificate"
+            checked={checklist.workingWithChildrenCertificate}
+            onChange={handleCheckboxChange}
+            className='checkbox'
+          />
+          A copy of your Working with Children Certificate (if requested)
+        </label>
+        {checklist.workingWithChildrenCertificate && (
+          <input
+            type="file"
+            name="workingWithChildrenCertificate"
+            className='FileInput'
+            onChange={(e) => handleFileChange(e, "workingWithChildrenCertificate")}
+          />
+        )}
+        <div></div>
+        <br />
+      </div>
+    </div>
       <br /><br />
 
     <div className="boxContent">
@@ -858,6 +939,56 @@ function PersonalInfoForm() {
     </div>
 <br /><br />
 
+<div className="boxContent">
+                    <div className="container">
+      <div className="QuestionLine">Has any site been allocated to you?</div>
+      <div className='text2'>{personalInfo.isSiteAllocated}</div>
+      <div>
+      <div className='block'>
+      <div className="ButtonContainer" style={{backgroundColor: "#FFF"}}>
+        <button
+         type="button"
+          className={siteSelectedButton === 'Yes' ? 'active' : ''}
+          name="isSiteAllocated"
+          value="Yes"
+          onClick={()=>{handleInputChange({ target: { name: 'isSiteAllocated', value: 'Yes' } }); setSiteSelectedButton("Yes")}}
+        >
+          Yes
+        </button>
+        <button
+         type="button"
+          className={siteSelectedButton === 'No' ? 'active' : ''}
+          name="isSiteAllocated"
+          value="No"
+          onClick={()=>{handleInputChange({ target: { name: 'isSiteAllocated', value: 'No' } }); setSiteSelectedButton("No"); }}>
+          No
+        </button>
+      </div>
+      </div>
+      <div>
+        {formErrors.isSiteAllocated && <div className="error-message">{formErrors.isSiteAllocated}</div>}
+        </div>
+        </div>
+    </div>
+        {personalInfo.isSiteAllocated === 'Yes' &&
+        <div className="container" style={{marginTop:20}}>
+      <div className="QuestionLine">Name of the site</div>
+      <input
+              type="text"
+              name="siteName"
+              value={personalInfo.siteName}
+              onChange={handleInputChange}
+              placeholder="Enter site name"
+              className="inputLine"
+            />
+      <div>
+      <div>
+        {formErrors.siteName && <div className="error-message">{formErrors.siteName}</div>}
+        </div>
+        </div>
+    </div>
+    }
+    </div>
  
 
 {/*       

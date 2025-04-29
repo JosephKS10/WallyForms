@@ -14,21 +14,24 @@ function Header(props) {
   return (
     <div className="leftDesign">
       <div className="mainHeader">
-        <button className='menuButton' onClick={toggleMenu} style={{visibility:props.visibility}}>
+        <button className='menuButton' onClick={toggleMenu} style={{ visibility: props.visibility }}>
           <i className="fa-solid fa-bars"></i>
         </button>
-        <img src={companyLogo} alt="logo" className='logo'/>
+        {props.companyLogoVisibility && <img src={companyLogo} alt="logo" className='logo' />}
       </div>
       <h2 className='boxHeading'>{props.heading}</h2>
       <p className="boxSubHeading">{props.subHeading}</p>
 
       {showMenu && (
-        <div className="dropdownMenu">     
-        <div className='menuHeader'>          
-        <button className='menuButton' onClick={toggleMenu}>
-          <i className="fa-solid fa-bars"></i>
-        </button>
-        </div> 
+        <div className="dropdownMenu">
+          <div className='menuHeader'>
+            <button className='menuButton' onClick={toggleMenu}>
+              <i className="fa-solid fa-bars"></i>
+            </button>
+          </div>
+
+          {/* For Cleaners */}
+          <h3 className="menuSectionHeading">For Cleaners</h3>
           <ul>
             <li>
               <Link to="/PersonalInfo" className={location.pathname === '/PersonalInfo' ? 'active' : ''}>Contractor Detail</Link>
@@ -36,12 +39,20 @@ function Header(props) {
             <li>
               <Link to="/Form2" className={location.pathname === '/Form2' ? 'active' : ''}>Independent Contract Agreement</Link>
             </li>
-            {/* <li>
-              <Link to="/Form3" className={location.pathname === '/Form3' ? 'active' : ''}>WCC Site Start Up Training and Induction</Link>
+            <li>
+              <Link to="/TWVkaWFVcGxvYWRMaW5r" className={location.pathname === '/TWVkaWFVcGxvYWRMaW5r' ? 'active' : ''}>Cleaning Audit</Link>
             </li>
             <li>
-              <Link to="/Form4" className={location.pathname === '/Form4' ? 'active' : ''}>AECFM Basic Induction Questionnaire</Link>
-            </li> */}
+              <Link to="/RectificationForm" className={location.pathname === '/RectificationForm' ? 'active' : ''}>Rectification Form</Link>
+            </li>
+          </ul>
+
+          {/* For Supervisors */}
+          <h3 className="menuSectionHeading">For Supervisors</h3>
+          <ul>
+            <li>
+              <Link to="/SupervisorFormCleanerRemoval" className={location.pathname === '/SupervisorFormCleanerRemoval' ? 'active' : ''}>Supervisor Cleaner Removal Form</Link>
+            </li>
           </ul>
         </div>
       )}

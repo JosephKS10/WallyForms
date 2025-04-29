@@ -8,7 +8,7 @@ import Form4 from './components/Form4';
 import Stage1 from './Pages/Stage1';
 import CleanerAuditScreen from './Pages/CleanerAudit';
 import RectificationForm from './Pages/RectificationForm';
-
+import SupervisorFormCleanerRemoval from './Pages/SupervisorFormCleanerRemoval';
 import './App.css'
 
 function App() {
@@ -30,6 +30,8 @@ function App() {
           <Route path="/U3RhZ2UxRm9ybQ==" element={<Stage1 />} />
           <Route path="/TWVkaWFVcGxvYWRMaW5r" element={<CleanerAuditScreen />} />
           <Route path="/RectificationForm" element={<RectificationForm />} />
+          <Route path="/SupervisorFormCleanerRemoval" element={<SupervisorFormCleanerRemoval />} />
+
 
         </Routes>
       </div>

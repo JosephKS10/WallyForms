@@ -216,6 +216,15 @@
 .checkbox{
     margin-right: 2vw;
 }
+.FileInput{
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+    background-color: #D9D9D9; 
+    color: #404040; 
+    padding: 10px 20px;
+    font-size: 14px;
+    width: 70%;
+}
 .fileInput {
     margin-top: 1vh;
     margin-bottom: 1vh;

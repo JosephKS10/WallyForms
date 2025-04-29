@@ -21,33 +21,37 @@ const MediaSummary = ({ images }) => {
     );
 };
 
+
+
 function CleanerAuditScreen() {
     const [siteInfo, setSiteInfo] = useState({
         siteName: '',
         conductedOn: new Date().toISOString().split('T')[0],
         preparedBy: '',
         location: '',
+        anyMoreBuildings: '',
+        photosOfMoreBuilding: '',
     });
-
+    console.log(siteInfo)
     const [entranceImages, setEntranceImages] = useState([]);
     const [receptionImages, setReceptionImages] = useState([]);
     const [kitchenImages, setKitchenImages] = useState([]);
-    const [generalImages, setGeneralImages] = useState([]);
     const [washroomImages, setWashroomImages] = useState([]);
+    const [cleanerImages, setCleanerImages] = useState([]);
 
     const [notes, setNotes] = useState({
         entrance: '',
         reception: '',
         kitchen: '',
-        generalAreas: '',
         washrooms: '',
+        cleaner: '',
     });
     const [showNotes, setShowNotes] = useState({
         entrance: false,
         reception: false,
         kitchen: false,
-        generalAreas: false,
         washrooms: false,
+        cleaner: false,
     });
 
     const handleInputChange = (e) => {
@@ -98,12 +102,12 @@ function CleanerAuditScreen() {
                 case 'kitchen':
                     setKitchenImages(compressedImages);
                     break;
-                case 'general':
-                    setGeneralImages(compressedImages);
-                    break;
                 case 'washroom':
                     setWashroomImages(compressedImages);
                     break;
+                case 'cleaner':
+                    setCleanerImages(compressedImages);
+                    break;   
                 default:
                     break;
             }
@@ -160,6 +164,10 @@ function CleanerAuditScreen() {
         );
     };
 
+    const [selectedButton, setSelectedButton] = useState(''); 
+    const [selectedButton2, setSelectedButton2] = useState(''); 
+
+
     const [formErrors, setFormErrors] = useState({});
 
     const validateForm = () => {
@@ -171,6 +179,15 @@ function CleanerAuditScreen() {
         if (!siteInfo.preparedBy) {
             errors.preparedBy = "Cleaner's name is required";
         }
+        if(!siteInfo.anyMoreBuildings){
+            errors.anyMoreBuildings = 'This field is required';
+        }
+        if(siteInfo.anyMoreBuildings === 'Yes' && !siteInfo.photosOfMoreBuilding){
+            errors.photosOfMoreBuilding = 'This field is required';
+        }
+        if(siteInfo.anyMoreBuildings === 'Yes' && siteInfo.photosOfMoreBuilding === "No"){
+            errors.photosOfMoreBuilding = 'Please upload the photos of every building';
+        }
         if(entranceImages.length === 0){
             errors.entranceImages = 'Entrance images are required';
         }
@@ -180,27 +197,37 @@ function CleanerAuditScreen() {
         if(kitchenImages.length === 0){
             errors.kitchenImages = 'Kitchen images are required';
         }
-        if(generalImages.length === 0){
-            errors.generalImages = 'General Area images are required';
-        }
+        
         if(washroomImages.length === 0){
             errors.washroomImages = 'Washroom images are required';
         }
-        if(fileInputs.audit === "null"){
-            errors.audit = 'Audit file is required';
-
+        if(cleanerImages.length === 0){
+            errors.cleanerImages = 'Cleaner images are required';
         }
+        
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
 
+    const [formErrors2, setFormErrors2] = useState({});
+
+    const validateForm2 = () => {
+        const errors = {};
+        if(fileInputs.audit === "null"){
+            errors.audit = 'Audit file is required';
+        }
+
+        setFormErrors2(errors);
+        return Object.keys(errors).length === 0;
+    };
+
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submittedSuccessfully, setSubmittedSuccessfully] = useState(false);
-    const [generatePDF, setGeneratePDF] = useState(false);
-    const [submitBtn, setSubmitBtn] = useState(true);
-    const [fileInputsSubmission, setFileInputsSubmission] = useState(false)
+    // const [submittedSuccessfully, setSubmittedSuccessfully] = useState(false);
+    // const [generatePDF, setGeneratePDF] = useState(false);
+    // const [submitBtn, setSubmitBtn] = useState(true);
+    // const [fileInputsSubmission, setFileInputsSubmission] = useState(false)
 
     const [fileInputs, setFileInputs] = useState({
         audit: "null",
@@ -219,47 +246,106 @@ function CleanerAuditScreen() {
         reader.readAsDataURL(file);
     };
 
-    const handleSubmit = (e) => {
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     // Validate form
+    //     if (validateForm2()) {
+    //         setIsSubmitting(true); 
+    //         console.log('Form submission started');
+    //         handleSubmitAuditFile(e)
+    //     }
+    // };
+
+    const scriptUrl = "https://script.google.com/macros/s/AKfycby980DOHGeb7Hns1GOC94EmNvsIOmbLYU6BGK-SkvEuVuRPTb18HodRUZKlf1g2hRZq/exec"
+
+    const [formSubmitted, setFormSubmitted] = useState(false);
+
+   
+
+    const handleSubmitData = (e) => {
         e.preventDefault();
-        // Validate form
-        if (validateForm()) {
-            setIsSubmitting(true); 
-            console.log('Form submission started');
-            handleSubmitAuditFile(e)
+        console.log("submitting")
+        if(formSubmitted){
+            window.print();
+            
         }
-    };
-
-
-
-    const handleSubmitAuditFile = (e) => {
-        e.preventDefault();
-          setIsSubmitting(true); 
-          setFileInputsSubmission(true)
-          console.log("Uploading Files")
-          const scriptUrl2 = "https://script.google.com/macros/s/AKfycbxZBXhjrUuMEC_G1pYYAUHCzNo0QhqkX3IPE_H4dlaY_1R01nzU23z0lZ100tnReVVv/exec"
-          const formData = new FormData();
+        else{
+        if (validateForm()) {
+            setIsSubmitting(true);
+          const formData = {
+            ...siteInfo,
+          };
       
+          const formDataToSubmit = new FormData();
       
-          formData.append("fullName", siteInfo.siteName+" "+siteInfo.conductedOn);
-          formData.append("audit", fileInputs.audit);
-      
-      
-          fetch(scriptUrl2, {
-            method: "POST",
-            body: formData,
+          // Append each key-value pair from formData to formDataToSubmit
+          for (const key in formData) {
+            formDataToSubmit.append(key, formData[key]);
+          }
+    
+          // Perform form submission using fetch
+          fetch(scriptUrl, {
+            method: 'POST',
+            body: formDataToSubmit
           })
-            .then((response) => {
-              setIsSubmitting(false); 
-             setSubmittedSuccessfully(true);
-             console.log(response)
-            })
-            .catch((error) => {
-              // Handle errors
-              setIsSubmitting(false); 
-              console.error("Error during file upload:", error);
-            });
+          .then(response => {
+            
+            if (response.ok) {
+              console.log('Form submitted successfully');
+              
+              setFormSubmitted(true);
+              setIsSubmitting(false);
+              window.print();
+            } else {
+              console.error('Form submission failed');
+              setIsSubmitting(false);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            // Handle error cases
+          });
+        } else {
+          
+          const firstErrorKey = Object.keys(formErrors)[0];
+          const firstErrorElement = document.querySelector(`[name="${firstErrorKey}"]`);
+          if (firstErrorElement) {
+            firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+    }
+      };
 
-      }
+
+    // const handleSubmitAuditFile = (e) => {
+    //     e.preventDefault();
+    //       setIsSubmitting(true); 
+    //       setFileInputsSubmission(true)
+    //       console.log("Uploading Files")
+    //       const scriptUrl2 = "https://script.google.com/macros/s/AKfycbxZBXhjrUuMEC_G1pYYAUHCzNo0QhqkX3IPE_H4dlaY_1R01nzU23z0lZ100tnReVVv/exec"
+    //       const formData = new FormData();
+      
+      
+    //       formData.append("fullName", siteInfo.siteName+" "+siteInfo.conductedOn);
+    //       formData.append("audit", fileInputs.audit);
+      
+      
+    //       fetch(scriptUrl2, {
+    //         method: "POST",
+    //         body: formData,
+    //       })
+    //         .then((response) => {
+    //           setIsSubmitting(false); 
+    //          setSubmittedSuccessfully(true);
+    //          console.log(response)
+    //         })
+    //         .catch((error) => {
+    //           // Handle errors
+    //           setIsSubmitting(false); 
+    //           console.error("Error during file upload:", error);
+    //         });
+
+    //   }
     
 
     useEffect(() => {
@@ -295,9 +381,9 @@ function CleanerAuditScreen() {
 
     return (
         <React.Fragment>
-            <Header heading="Cleaning Audit" subHeading="" visibility="collapse" />
+            <Header heading="Cleaning Audit" subHeading="" visibility="visible" companyLogoVisibility={false}/>
             <div className='formHeading'></div>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmitData}>
                 <div className="boxContent">
                     <div className="lineContainer">
                         <div className="QuestionLine">Site Name</div>
@@ -388,7 +474,7 @@ function CleanerAuditScreen() {
                             />
                             </div>
                             <div>
-                                {formErrors.entranceImages && <div className="error-message">{formErrors.images}</div>}
+                                {formErrors.entranceImages && <div className="error-message">{formErrors.entranceImages}</div>}
                             </div>
                         </div>
                     </div>
@@ -421,7 +507,7 @@ function CleanerAuditScreen() {
                             />
                             </div>
                             <div>
-                                {formErrors.receptionImages && <div className="error-message">{formErrors.images}</div>}
+                                {formErrors.receptionImages && <div className="error-message">{formErrors.receptionImages}</div>}
                             </div>
                         </div>
                     </div>
@@ -435,7 +521,7 @@ function CleanerAuditScreen() {
                 </div>
                 <br />
                 <div className="boxContent">
-                    <div className="sectionHeader"><b>Kitchen</b> - (Fridge exteriors, cabinet doors, air vents, cobwebs, under appliances, behind and top of bins, dusting and under dispensers)</div>
+                    <div className="sectionHeader"><b>Photos of Kitchen</b> - (Fridge exteriors, cabinet doors, air vents, cobwebs, under appliances, behind and top of bins, dusting and under dispensers)</div>
                 <div className="block">
                 <div className="lineContainer">
                         <div>
@@ -453,7 +539,7 @@ function CleanerAuditScreen() {
                             />
                             </div>
                             <div>
-                                {formErrors.kitchenImages && <div className="error-message">{formErrors.images}</div>}
+                                {formErrors.kitchenImages && <div className="error-message">{formErrors.kitchenImages}</div>}
                             </div>
                         </div>
                     </div>
@@ -467,7 +553,7 @@ function CleanerAuditScreen() {
                 </div>
                 <br />
                 <div className="boxContent">
-                    <div className="sectionHeader"><b>Toilets</b> - (Walls, air vents, hand dryers, under dispensers, behind toilets and corners and edges)</div>
+                    <div className="sectionHeader"><b>Photos of Toilets</b> - (Walls, air vents, hand dryers, under dispensers, behind toilets and corners and edges)</div>
                     <div className="block">    
                 <div className="lineContainer">
                         <div>
@@ -485,7 +571,7 @@ function CleanerAuditScreen() {
                             />
                             </div>
                             <div>
-                                {formErrors.washroomImages && <div className="error-message">{formErrors.images}</div>}
+                                {formErrors.washroomImages && <div className="error-message">{formErrors.washroomImages}</div>}
                             </div>
                         </div>
                     </div>
@@ -498,20 +584,123 @@ function CleanerAuditScreen() {
                     </div>
                 </div><br />
                 <div className="boxContent">
-                    <div className="sectionHeader"><b>Media Summary</b></div>
-                    <MediaSummary images={[...entranceImages, ...receptionImages, ...kitchenImages, ...generalImages, ...washroomImages]} />
+                    <div className="sectionHeader"><b>Photos of Cleaner's Room</b></div>
+                    <div className="block">    
+                <div className="lineContainer">
+                        <div>
+                            <div className="answerLine">
+                            <label htmlFor="fileInputCleaner" className="customFileInput">
+                                Add Media
+                            </label>
+                            <input
+                                id="fileInputCleaner"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={(e) => handleImageChange(e, 'cleaner')}
+                                className="fileInput"
+                            />
+                            </div>
+                            <div>
+                                {formErrors.cleanerImages && <div className="error-message">{formErrors.cleanerImages}</div>}
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div>
+                        {cleanerImages.length !==0 && renderImagePreview(cleanerImages)}
+                        </div>
+                        <div>
+                    {renderNotesInput('cleaner')}
+                    </div>
+                </div><br />
+                <div className="boxContent">
+                                <div className="container">
+                <div className="QuestionLine">Are there any more building on the site?</div>
+                <div className='text2'>{siteInfo.anyMoreBuildings}</div>
+                <div>
+                <div className='block'>
+                <div className="ButtonContainer" style={{backgroundColor: "#FFF"}}>
+                    <button
+                    type="button"
+                    className={selectedButton === 'Yes' ? 'active' : ''}
+                    name="anyMoreBuildings"
+                    value="Yes"
+                    onClick={()=>{handleInputChange({ target: { name: 'anyMoreBuildings', value: 'Yes' } }); setSelectedButton("Yes")}}
+                    >
+                    Yes
+                    </button>
+                    <button
+                    type="button"
+                    className={selectedButton === 'No' ? 'active' : ''}
+                    name="anyMoreBuildings"
+                    value="No"
+                    onClick={()=>{handleInputChange({ target: { name: 'anyMoreBuildings', value: 'No' } }); setSelectedButton("No"); }}>
+                    No
+                    </button>
                 </div>
-                <button  type='button' className="nextButton" disabled={isSubmitting} onClick={()=>{window.print();setGeneratePDF(true)}} style={{width:"70vw"}}>Download PDF</button><br /><br /><br /><br />
-                {generatePDF && (<div className='boxContent block'>
+                </div>
+                <div>
+                    {formErrors.anyMoreBuildings && <div className="error-message">{formErrors.anyMoreBuildings}</div>}
+                    </div>
+                    </div>
+                </div>
+                    {siteInfo.anyMoreBuildings === 'Yes' &&
+                    <div className="container" style={{marginTop:20}}>
+                <div className="QuestionLine">Have you uploaded the photos of every building?</div>
+                <div className='text2'>{siteInfo.photosOfMoreBuilding}</div>
+                <div>
+                    <div className='block'>
+                <div className="ButtonContainer" style={{backgroundColor: "#FFF"}}>
+                    <button
+                    type="button"
+                    className={selectedButton2 === 'Yes' ? 'active' : ''}
+                    name="photosOfMoreBuilding"
+                    value="Yes"
+                    onClick={()=>{handleInputChange({ target: { name: 'photosOfMoreBuilding', value: 'Yes' } }); setSelectedButton2("Yes")}}>
+                    Yes
+                    </button>
+                    <button
+                    type="button"
+                    className={selectedButton2 === 'No' ? 'active' : ''}
+                    name="photosOfMoreBuilding"
+                    value="No"
+                    onClick={()=>{handleInputChange({ target: { name: 'photosOfMoreBuilding', value: 'No' } }); setSelectedButton2("No");}}>
+                    No
+                    </button>
+                </div>
+                </div>
+                <div>
+                    {formErrors.photosOfMoreBuilding && <div className="error-message">{formErrors.photosOfMoreBuilding}</div>}
+                    </div>
+                    </div>
+                </div>
+                }
+                </div>
+                
+                <br />
+                <div className="boxContent">
+                    <div className="sectionHeader"><b>Media Summary</b></div>
+                    <MediaSummary images={[...entranceImages, ...receptionImages, ...kitchenImages, ...washroomImages, ...cleanerImages]} />
+                </div>
+                <button
+          type="submit"
+          className="nextButton"
+          disabled={isSubmitting}
+          style={{ width: '70vw', backgroundColor: isSubmitting ? 'gray' : '#334D9C' }}
+        >
+          {isSubmitting ? 'Submitting...' : 'Download PDF'}
+        </button><br /><br /><br /><br />
+                {/* {generatePDF && (<div className='boxContent block'>
 
                  <label htmlFor="contractPDF" className='QuestionLine block'>Upload Cleaning Audit PDF</label>
                  <input type="file" name="audit" id="contract" className='answerline top block' onChange={(e)=>{handleFileChange(e, "audit")}}/>
-                 {formErrors.audit && <div className="error-message">{formErrors.audit}</div>}
+                 {formErrors2.audit && <div className="error-message">{formErrors2.audit}</div>}
                  <button  type='submit' className='fileUploadBtn block'>Final Submission</button>
 
-                 {isSubmitting && fileInputsSubmission && <Modal heading="Loading" subHeading="Please wait while your audit report is being submitted" buttonPresent="false" />}
-                 {submittedSuccessfully && fileInputsSubmission && <Modal heading="Success" subHeading="Your Audit report has been submitted successfully finally." subHeading1="Have a good day." buttonPresent="true" close={setSubmittedSuccessfully} pdfbutton={()=>{}} refresh={()=>{window.location.reload()}} submitDisable={setSubmitBtn}/>}
-                    </div>)}
+               
+                    </div>)} */}
+
             </form>
         </React.Fragment>
     );

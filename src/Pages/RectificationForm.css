@@ -10,8 +10,6 @@
     border-bottom: 3vh solid #e9edf6;
     margin-bottom: 1vh;
 }
-
-
 .text1{
     display: block;
     color: #000;
@@ -22,13 +20,15 @@
     letter-spacing: 1px;
 }
 
+
 .lineContainer{
-    width: 100vw;
+    width: 100%;
     border-bottom: 1px solid #ccc;
     flex-direction: row;
     display: flex;
     justify-content: space-between;
     padding-bottom: 1vh;
+
 }
 .QuestionLine{
     width: 50vw;
@@ -81,6 +81,34 @@
     border-bottom: 1px solid #ccc;
     padding-bottom: 2vh;
 }
+.ButtonContainer{
+    background-color: #D9D9D9;
+    width: 50vw;
+    display: flex;
+    justify-content: center;
+}
+.ButtonContainer button{
+    background-color: #D9D9D9;
+    color: #404040;
+    padding: 4px 14px;
+    border: 1px solid gray;
+    border-radius: 1px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: "Hind", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+.ButtonContainer button.active{
+    background-color: #404040;
+    color: #C8C3C3;
+}
+.text2{
+    display: block;
+    color: #000;
+    font-size: 20px;    
+    font-family: "Hind", sans-serif;
+}
 
 }
 
@@ -89,6 +117,9 @@
     display: none;
    }
    .text1{
+    display: none;
+   }
+   .text2{
     display: none;
    }
    .center{
