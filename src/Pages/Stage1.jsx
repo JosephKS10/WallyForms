@@ -4,8 +4,8 @@ import "../components/PersonalInfoForm.css"
 import Header from '../components/Header';
 import Modal from '../components/Modal';
 import ThankyouBox from '../components/ThankyouBox';
-
 import './Stage1.css'
+
 function Stage1() {
   const navigate = useNavigate(); 
 
@@ -15,10 +15,12 @@ function Stage1() {
 
   if (!isMobile()){
     return(
-      <div className="error-message">
-      <h1>Error: Access from desktop not allowed</h1>
-      <p>Please access this website from a mobile device.</p>
-    </div>
+     <div className="desktop-error-container">
+        <div className="desktop-error-content">
+          <h1>Error: Access from desktop not allowed</h1>
+          <p>Please access this website from a mobile device.</p>
+        </div>
+      </div>
     )
   }
 
@@ -30,6 +32,8 @@ function Stage1() {
     date: currentDate,
     suburb: '',
     contactNumber: '',
+    email: '',
+    nationality: ''
   });
 
   const handleInputChange = (e) => {
@@ -59,11 +63,9 @@ function Stage1() {
   const handleDocumentChange = (question, value) => {
     // Get the previous value of the checkbox
     const prevValue = documentInfo[question];
-
-     setDocumentInfo({ ...documentInfo, [question]: value });
+    setDocumentInfo({ ...documentInfo, [question]: value });
 
     if (prevValue === 'No' && value === 'Yes' && documentInfo[`${question}Reason`] !== '') {
-        // setDocumentInfo({ ...documentInfo,  });
         setDocumentInfo({ ...documentInfo, [`${question}Reason`]: '' });
     }
     };
@@ -98,11 +100,8 @@ function Stage1() {
         let prevValue = time.all;
         let actualValue;
         if (!prevValue) {
-            // If the checkbox was unchecked before
             const updatedTime = {};
-            // Check if the start time and end time for Monday are set
             if (availabilityDay.Monday && time.startTimeMonday && time.endTimeMonday) {
-                // If conditions are met, set the same time for all selected days
                 Object.keys(availabilityDay).forEach(day => {
                     if (availabilityDay[day]) {
                         updatedTime[`startTime${day}`] = time.startTimeMonday;
@@ -113,7 +112,6 @@ function Stage1() {
                 actualValue = true;
             }
         } else {
-            // If the checkbox was checked before, uncheck it and reset all days' times except for Monday
             const updatedTime = {};
             Object.keys(time).forEach(key => {
                 if (key.includes('startTime') || key.includes('endTime')) {
@@ -146,37 +144,33 @@ function Stage1() {
             all: actualValue
         }));
     } else {
-        // Handle changes for individual time inputs
         setTime({ ...time, [name]: value });
     }
 };
 
 
   const RenderTimer = ({startTime, endTime}) => {
-    return(
-        <div style={{marginBottom:10}}>
-      <div >Time</div>
-      <div>
-        <div style={{display:"flex"}}>
-        <input 
-          type="time" 
-          name={startTime} 
-          value={time[startTime]} 
-          onChange={handleTimeChange} 
-          className='timeInput'
-        />&nbsp;-&nbsp;
-        <input 
-          type="time" 
-          name={endTime}
-          value={time[endTime]} 
-          onChange={handleTimeChange} 
-          className='timeInput'
-        />
+    return( 
+    <div className="time-container">
+        <div className="time-label">Time</div>
+        <div className="time-inputs-container">
+          <input 
+            type="time" 
+            name={startTime} 
+            value={time[startTime]} 
+            onChange={handleTimeChange} 
+            className='time-input'
+          />
+          <span className="time-separator">-</span>
+          <input 
+            type="time" 
+            name={endTime}
+            value={time[endTime]} 
+            onChange={handleTimeChange} 
+            className='time-input'
+          />
         </div>
-        <div>
-        {formErrors.startTime && <div className="error-message" style={{textAlign:"center"}}>{formErrors.startTime}</div>}
-        </div>
-        </div>
+        {formErrors.startTime && <div className="error-message time-error">{formErrors.startTime}</div>}
       </div>
     )
   }
@@ -223,25 +217,35 @@ function Stage1() {
     const selectedDays = Object.values(availabilityDay);
     const atLeastOneDaySelected = selectedDays.some(day => day === true);
     if (!atLeastOneDaySelected) {
-      return false; // Return false if no day is selected
+      return false; 
     }
-    return true; // Return true if at least one day is selected
+    return true; 
   };
 
   
   const validateForm = () => {
     const errors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   
-    if (!personalInfo.name) {
+    if (!personalInfo.name.trim()) {
       errors.name = 'Name is required';
     }
   
-    if (!personalInfo.suburb) {
+    if (!personalInfo.suburb.trim()) {
       errors.suburb = 'Suburb is required';
     }
 
-    if (!personalInfo.contactNumber) {
+    if (!personalInfo.contactNumber.trim()) {
       errors.contactNumber = 'Contact number is required';
+    }
+    if (!personalInfo.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!emailRegex.test(personalInfo.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    if (!personalInfo.nationality.trim()) {
+      errors.nationality = 'Nationality is required';
     }
 
     if(!documentInfo.ownCar){
@@ -285,16 +289,14 @@ function Stage1() {
     }
 
   const isAvailabilityDaysValid = validateAvailabilityDays();
-
   if (!isAvailabilityDaysValid) {
-    // Display an error message or handle the validation failure
     errors.availabilityDay = "Please select at least one day.";
   }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
   
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbyFB8AdnsJxvAMShLnW5LS4-uygf3tLtIQGzrgNU6uWQyErW_VAPErIftOI7u26gcqJ/exec"
+  const scriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL_STAGE1; 
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedSuccessfully, setsubmittedSuccessfully] = useState(false);
@@ -360,7 +362,8 @@ function Stage1() {
       <form onSubmit={handleSubmit}>
     {submittedSuccessfully || 
     <div>
-              <div className="boxContent">
+      <div className="boxContent">
+        
         <div className="lineContainer">
           <div className="QuestionLine">Name</div>
           <div>
@@ -399,7 +402,7 @@ function Stage1() {
         </div>
 
         <div className="lineContainer">
-          <div className="QuestionLine">Number</div>
+          <div className="QuestionLine">Contact Number</div>
           <div>
           <div className="answerLine">
             <input
@@ -419,6 +422,28 @@ function Stage1() {
         </div>
 
         <div className="lineContainer">
+          <div className="QuestionLine">Email</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="email"
+              name="email"
+              value={personalInfo.email}
+              onChange={handleInputChange}
+              className='inputLine'
+              placeholder='Enter email...'
+
+            />
+          </div>
+          <div>
+          {formErrors.email && <div className="error-message">{formErrors.email}</div>}
+        </div>
+        </div>
+        </div>
+
+        
+
+        <div className="lineContainer">
           <div className="QuestionLine">Suburb</div>
           <div>
           <div className="answerLine">
@@ -436,7 +461,28 @@ function Stage1() {
         </div>
         </div>
         </div>
-      </div>
+      
+
+      <div className="lineContainer">
+          <div className="QuestionLine">Nationality</div>
+          <div>
+          <div className="answerLine">
+            <input
+              type="text"
+              name="nationality"
+              value={personalInfo.nationality}
+              onChange={handleInputChange}
+              className='inputLine'
+              placeholder='Enter nationality...'
+            />
+          </div>
+          <div>
+          {formErrors.nationality && <div className="error-message">{formErrors.nationality}</div>}
+        </div>
+        </div>
+        </div>
+
+        </div>
 
 <br />
         <div className="boxContent">

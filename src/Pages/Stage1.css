@@ -9,14 +9,27 @@
     width: 30vw;
     text-align: center;
 }
+.time-label {
+  margin-bottom: 5px;
 
-.timeInput{
-    width: 22vw;
-    height: 3vh;
-    padding: 1vw;
-    background-color: #D9D9D9;
-    border: none;
-    color: #404040;
-    font-family: "Hind", sans-serif;
-    font-weight: 700;
+}
+
+.time-inputs-container {
+  display: flex;
+  align-items: center;
+  gap:4px;
+  margin-bottom: 2vh;
+}
+
+.time-input {
+  padding: 2px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 24vw;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+}
+
+.time-separator {
+  font-weight: bold;
 }
