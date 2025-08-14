@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import "./SupervisorFormCleanerRemoval.css";
-import emailjs from 'emailjs-com';
+
 
 function SupervisorFormCleanerRemoval() {
   const [selectedButton, setSelectedButton] = useState(''); // To track New Cleaner or Old Cleaner
@@ -10,10 +10,10 @@ function SupervisorFormCleanerRemoval() {
   const [siteInfo, setSiteInfo] = useState({
     siteName: '',
     cleanerName: '',
-    conductedOn: '', // Default date
+    conductedOn: '', 
     startingDate: '',
-    hours: '',
-    pay: '',
+    // hours: '',
+    // pay: '',
     cleaner: '',
   });
 
@@ -74,12 +74,12 @@ const renderNotesInput = (section) => {
     if (!siteInfo.cleanerName) {
       errors.cleanerName = "Cleaner's name is required";
     }
-    if (!siteInfo.hours || isNaN(siteInfo.hours) || siteInfo.hours < 1 || siteInfo.hours > 12) {
-      errors.hours = "Please enter valid hours (1-12)";
-    }
-    if (!siteInfo.pay || isNaN(siteInfo.pay)) {
-      errors.pay = "Please enter a valid pay amount";
-    }
+    // if (!siteInfo.hours || isNaN(siteInfo.hours) || siteInfo.hours < 1 || siteInfo.hours > 12) {
+    //   errors.hours = "Please enter valid hours (1-12)";
+    // }
+    // if (!siteInfo.pay || isNaN(siteInfo.pay)) {
+    //   errors.pay = "Please enter a valid pay amount";
+    // }
     if (!siteInfo.startingDate) {
         errors.startingDate = "Starting date is required";
     }
@@ -92,92 +92,94 @@ const renderNotesInput = (section) => {
   };
 
   // Function to handle form submission
-  const scriptUrl = "https://script.google.com/macros/s/AKfycbxtLsY9cguJvXVEdckEcRsuO3_BeoN8DULF4HUIq6Rep_cc91YiXWU7aNP9YLuOKp79/exec"
+  const scriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL_SITE_CHANGING;
 
     const [formSubmitted, setFormSubmitted] = useState(false);
 
-    const formattedMessage = `
-    Site Information:
-    - Site Name: ${siteInfo.siteName}
-    - Conducted On: ${siteInfo.conductedOn}
-    - Cleaner Name: ${siteInfo.cleanerName}
-    - Hours: ${siteInfo.hours}
-    - Pay: ${siteInfo.pay}
-    - Contractor Name: ${siteInfo.startingDate}
-    - Cleaner Status: ${siteInfo.cleaner}
-    `;
 
-    const handleSubmitData = (e) => {
-        e.preventDefault();
-        console.log("Submitting data...");
-      
-        if (formSubmitted) {
-          window.print();
-        } else {
-          if (validateForm()) {
-            setIsSubmitting(true); // Disable the submit button during submission
-            // Add dollar sign to pay before submission
-            const updatedSiteInfo = {
-              ...siteInfo,
-              pay: `${siteInfo.pay}$`, 
-              ...notes,
-            };
-      
-            const formData = new FormData();
-      
-            // Append each key-value pair from updatedSiteInfo to formData
-            for (const key in updatedSiteInfo) {
-              formData.append(key, updatedSiteInfo[key]);
-            }
-      
-            fetch(scriptUrl, {
-              method: 'POST',
-              body: formData,
-            })
-              .then((response) => {
-                if (response.ok) {
-                  emailjs.send("service_nllln5l", "template_8wzv3ja", {
-                    from_name: "Wally Cleaning",
-                    to_name: "Admin",
-                    message: formattedMessage, 
-                }, PUBLIC_KEY).then((response) => {
-                    console.log("Email sent successfully:", response);
-                }).catch((error) => {
-                    console.error("Error sending email:", error);
-                });
-                  console.log('Form submitted successfully');
-                  setFormSubmitted(true);
-                  setIsSubmitting(false) 
-                  window.print();
-                } else {
-                  console.error('Form submission failed');
-                }
-              })
-              .catch((error) => {
-                console.error('Error:', error);
-                setIsSubmitting(false); // Re-enable the submit button
-                // Handle error cases
-              });
-          } else {
-            // Scroll to the first error field
-            const firstErrorKey = Object.keys(formErrors)[0];
-            const firstErrorElement = document.querySelector(`[name="${firstErrorKey}"]`);
-            if (firstErrorElement) {
-              firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }
-        }
-      };
+const handleSubmitData = async (e) => {
+  e.preventDefault();
+  console.log("Submitting data...");
+
+  if (formSubmitted) {
+    window.print();
+    return;
+  }
+
+  if (!validateForm()) {
+    // Scroll to the first error field
+    const firstErrorKey = Object.keys(formErrors)[0];
+    const firstErrorElement = document.querySelector(`[name="${firstErrorKey}"]`);
+    if (firstErrorElement) {
+      firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    return;
+  }
+
+  setIsSubmitting(true);
+  
+  try {
+    // Prepare the data
+    const formData = {
+      ...siteInfo,
+      ...notes,
+    };
+
+    // First submit to Google Sheets
+    const googleSheetsResponse = await submitToGoogleSheets(formData);
+    if (!googleSheetsResponse.ok) {
+      throw new Error('Google Sheets submission failed');
+    }
+
+    // Then submit to your backend API for email
+    const apiResponse = await submitToBackendAPI(formData);
+    if (!apiResponse.ok) {
+      throw new Error('Email submission failed');
+    }
+
+    // If both successful
+    setFormSubmitted(true);
+    window.print();
+    
+  } catch (error) {
+    console.error('Error during submission:', error);
+    // You might want to show an error message to the user here
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+// Helper function to submit to Google Sheets
+const submitToGoogleSheets = async (data) => {
+  const formData = new FormData();
+  for (const key in data) {
+    formData.append(key, data[key]);
+  }
+
+  return await fetch(scriptUrl, {
+    method: 'POST',
+    body: formData,
+  });
+};
+
+// Helper function to submit to your backend API
+const submitToBackendAPI = async (data) => {
+  return await fetch('http://localhost:5001/api/wally-forms/site-changing-form-email-notification', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+};
       
 
 
   return (
     <div>
-      <Header heading="Supervisor Form - Changing Cleaner From Site" subHeading="" visibility="visible" companyLogoVisibility={true}/>
+      <Header heading="Site Changing Form" subHeading="" visibility="visible" companyLogoVisibility={true}/>
       <div className='formHeading'></div>
       <form onSubmit={handleSubmitData}>
-        {/* Cleaner's Name */}
-        <br />
         <div className="boxContent">
         <div className="lineContainer">
           <div className="QuestionLine">Cleaner's Name</div>
@@ -211,7 +213,7 @@ const renderNotesInput = (section) => {
         </div>
 
         {/* Hours Input */}
-        <div className="lineContainer">
+        {/* <div className="lineContainer">
           <div className="QuestionLine">Hours</div>
           <div>
             <input
@@ -226,13 +228,13 @@ const renderNotesInput = (section) => {
             />
             {formErrors.hours && <div className="error-message">{formErrors.hours}</div>}
           </div>
-        </div>
+        </div> */}
 
         {/* Pay Input */}
-        <div className="lineContainer">
+        {/* <div className="lineContainer">
         <div className="QuestionLine">Pay</div>
         <div style={{display:"flex", flexDirection:"column"}}>
-        <div className="inputWrapper"> {/* Add a wrapper around the input */}
+        <div className="inputWrapper"> 
             <input
             type="number"
             name="pay"
@@ -241,14 +243,14 @@ const renderNotesInput = (section) => {
             className="inputLine"
             placeholder="Enter pay (e.g., 15.50)"
             />
-            <span className="dollarSign">$</span> {/* Add the dollar sign here */}
+            <span className="dollarSign">$</span>
         </div>
         <div>
         {formErrors.pay && <div className="error-message">{formErrors.pay}</div>}
         </div>
         </div>
         
-        </div>
+        </div> */}
 
         {/* Starting Date */}
         <div className="lineContainer">
