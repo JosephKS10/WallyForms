@@ -164,7 +164,7 @@ const submitToGoogleSheets = async (data) => {
 
 // Helper function to submit to your backend API
 const submitToBackendAPI = async (data) => {
-  return await fetch('http://localhost:5001/api/wally-forms/site-changing-form-email-notification', {
+  return await fetch('https://stock-management-backend-jqdz.onrender.com/api/wally-forms/site-changing-form-email-notification', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
