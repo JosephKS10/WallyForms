@@ -196,13 +196,7 @@ function PersonalInfoForm() {
     errors.fullName = 'Full name is required';
   }
 
-  if (!personalInfo.isSiteAllocated) {
-    errors.fullName = 'This is required';
-  }
-
-  if (!personalInfo.siteName) {
-    errors.fullName = 'Site name is required';
-  }
+  
   
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -939,56 +933,7 @@ function PersonalInfoForm() {
     </div>
 <br /><br />
 
-<div className="boxContent">
-                    <div className="container">
-      <div className="QuestionLine">Has any site been allocated to you?</div>
-      <div className='text2'>{personalInfo.isSiteAllocated}</div>
-      <div>
-      <div className='block'>
-      <div className="ButtonContainer" style={{backgroundColor: "#FFF"}}>
-        <button
-         type="button"
-          className={siteSelectedButton === 'Yes' ? 'active' : ''}
-          name="isSiteAllocated"
-          value="Yes"
-          onClick={()=>{handleInputChange({ target: { name: 'isSiteAllocated', value: 'Yes' } }); setSiteSelectedButton("Yes")}}
-        >
-          Yes
-        </button>
-        <button
-         type="button"
-          className={siteSelectedButton === 'No' ? 'active' : ''}
-          name="isSiteAllocated"
-          value="No"
-          onClick={()=>{handleInputChange({ target: { name: 'isSiteAllocated', value: 'No' } }); setSiteSelectedButton("No"); }}>
-          No
-        </button>
-      </div>
-      </div>
-      <div>
-        {formErrors.isSiteAllocated && <div className="error-message">{formErrors.isSiteAllocated}</div>}
-        </div>
-        </div>
-    </div>
-        {personalInfo.isSiteAllocated === 'Yes' &&
-        <div className="container" style={{marginTop:20}}>
-      <div className="QuestionLine">Name of the site</div>
-      <input
-              type="text"
-              name="siteName"
-              value={personalInfo.siteName}
-              onChange={handleInputChange}
-              placeholder="Enter site name"
-              className="inputLine"
-            />
-      <div>
-      <div>
-        {formErrors.siteName && <div className="error-message">{formErrors.siteName}</div>}
-        </div>
-        </div>
-    </div>
-    }
-    </div>
+
  
 
 {/*       
