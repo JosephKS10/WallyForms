@@ -27,7 +27,7 @@ function App() {
           <Route path="/Form2" element={<Form2 />} />
           <Route path="/Form3" element={<Form3 />} />
           <Route path="/Form4" element={<Form4 />} />
-          <Route path="/U3RhZ2UxRm9ybQ==" element={<Stage1 />} />
+          <Route path="/public" element={<Stage1 />} />
           <Route path="/TWVkaWFVcGxvYWRMaW5r" element={<CleanerAuditScreen />} />
           <Route path="/RectificationForm" element={<RectificationForm />} />
           <Route path="/SupervisorFormCleanerRemoval" element={<SupervisorFormCleanerRemoval />} />
